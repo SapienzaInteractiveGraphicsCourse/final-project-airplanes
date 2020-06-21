@@ -21,47 +21,23 @@ var ring3;
 var three;
 
 //texture
-var texture = new THREE.TextureLoader().load( 'textures/grass.jpg' );
-texture.wrapS = THREE.RepeatWrapping; 
-texture.wrapT = THREE.RepeatWrapping;
-Planematerial = new THREE.MeshLambertMaterial({ map : texture , side: THREE.DoubleSide});
+var legnoTXT = new THREE.TextureLoader().load( 'textures/marr.PNG' );
+legnoTXT.wrapS = legnoTXT.wrapT = THREE.RepeatWrapping;
+legnoTXT.offset.set( 10, 0 );
+var greenpaintTXT = new THREE.TextureLoader().load( 'textures/green-paint.jpg' );
+var realgrassTXT = new THREE.TextureLoader().load( 'textures/lightgrass.jpg' );
+realgrassTXT.wrapS = THREE.RepeatWrapping; 
+realgrassTXT.wrapT = THREE.RepeatWrapping;
+realgrassTXT.repeat.set( 1, 10 );
+var grassTXT = new THREE.TextureLoader().load( 'textures/poligrass.jpg' );
+grassTXT.wrapS = THREE.RepeatWrapping; 
+grassTXT.wrapT = THREE.RepeatWrapping;
+grassTXT.repeat.set( 0, 10 );
+Planematerial = new THREE.MeshBasicMaterial({ map : grassTXT , side: THREE.DoubleSide});
 plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, 6000, 100 ), Planematerial);
 plane.rotation.x = Math.PI/2;
 
 var controls;
-
-
-/*
-const p = new THREE.PlaneGeometry( 100, 6000, 100 );
-const pM = new THREE.MeshBasicMaterial( {color: 0xfffff0, side: THREE.DoubleSide} );
-
-var groupPlane = new THREE.Group();
-
-var plane1 = new THREE.Mesh( p, Planematerial );
-
-groupPlane.add(plane);
-
-
-
-var plane2 = new THREE.Mesh( p, pM );
-plane2.rotation.x = Math.PI/2;
-plane2.rotation.z = Math.PI/2;
-plane2.position.z=-300
-plane2.position.x=-250
-groupPlane.add(plane2);
-
-var plane3 = new THREE.Mesh( p, pM );
-plane3.rotation.x = Math.PI/2;
-plane3.rotation.z = Math.PI/2;
-plane3.position.z=300
-plane3.position.x=-250
-groupPlane.add(plane3);
-
-var plane4 = new THREE.Mesh( p, pM );
-plane4.rotation.x = Math.PI/2;
-plane4.position.x=-500
-groupPlane.add(plane4);
-*/
 
 var collidableObject = [];  //TODO
 
@@ -73,6 +49,10 @@ var secondBB;
 var testBB;
 
 var collision;
+
+
+//FOG
+var fog_flag = false;
 
 function init() {
 
@@ -130,15 +110,15 @@ function init() {
     scene.add( ring_s );
 
 
-    tree = new THREE.Group();
+    tree = new THREE.Group(); 
 
-    log = new THREE.Mesh( new THREE.BoxBufferGeometry( 6, 15, 6 ), new THREE.MeshStandardMaterial( { color: 0x654321 } ) );
+    log = new THREE.Mesh( new THREE.BoxBufferGeometry( 5, 30, 5 ), new THREE.MeshBasicMaterial({ map : legnoTXT }) );
 
     tree.add(log);
     
-    crown = new THREE.Mesh( new THREE.BoxBufferGeometry( 15, 20, 15 ), new THREE.MeshStandardMaterial( { color: 0x00ffff } ) ) ;
+    crown = new THREE.Mesh( new THREE.BoxBufferGeometry( 20, 15, 20 ), new THREE.MeshBasicMaterial({ map : greenpaintTXT }) ) ;
 
-    crown.position.y=15.0;
+    crown.position.y=20.0;
 
     tree.add(crown);
 
@@ -197,6 +177,12 @@ function init() {
 
     container.appendChild( renderer.domElement ); // add the automatically created <canvas> element to the page
 
+
+    if(fog_flag) scene.fog = new THREE.Fog( 0xbbbbbb, 150, 210 );
+
+
+
+
 }
 
 /*
@@ -212,7 +198,7 @@ function repositionCam(){
     camera.position.y = mesh.position.y;
     camera.position.y +=10.0;
     camera.position.z = mesh.position.z;
-    camera.position.z += 30.0; 
+    camera.position.z += 35.0; 
 }
 
 function moveMesh(){
@@ -227,15 +213,19 @@ function moveMesh(){
     else  mesh.position.y += Math.sin(angleY) * vel; 
 }
 
-
+var n_ring_randring = 5;
 
 function randRing(count){
+    if(count == n_ring_randring)return true;
+
     new_rs= ring_s.clone();
     new_rs.position.z = mesh.position.z;
     new_rs.position.z -= 200.0;
     new_rs.position.x += (Math.random()-0.5)*50;
     if(count > 2) new_rs.position.y += (Math.random())*10;
     scene.add(new_rs);
+    
+    return false;
 }
 
 var timerRing = {};
@@ -264,66 +254,95 @@ function MovingRandRing(count){
 }
 
 var flag_p = false;
+var flag_endlvl = false;
+
+var starting_pos;
+var plane_lenght = 2200.0;
 
 function planelvl(){
 
     if(!flag_p){ //crea il piano
-    newPlanematerial = new THREE.MeshLambertMaterial({color: 0x22ff00, side: THREE.DoubleSide});
-    newplane = new THREE.Mesh(new THREE.PlaneGeometry( 100, 2000, 100 ), newPlanematerial);
-    newplane.rotation.x = Math.PI/2;
-    newplane.position.z = mesh.position.z;
-    newplane.position.z -= 1100.0;
-    newplane.position.y += 1.0;
-    scene.add(newplane);
-    flag_p = true;
-    for(var i = 0; i< 200 ; i+=1){  //da mettere qualcosa che si muove onvece di un albero ogni tanto / monete
-        newT = tree.clone();
-        newT.position.z = mesh.position.z;
-        newT.position.z = -(300 + i *9);
-        newT.position.x = (Math.random()-0.5) * 95;
-
-        newT.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI
-    
-        BB_log = new THREE.Box3().setFromObject(newT.children[0]);
-    
-        collidableTreeBoxes.push(BB_log);
-    
-        BB_crown = new THREE.Box3().setFromObject(newT.children[1]);
-
-        collidableTreeBoxes.push(BB_crown);
-    
         
-        scene.add(newT);
+        scene.background = new THREE.Color( 0x8FFFFF );
+
+        newPlanematerial = new THREE.MeshBasicMaterial({ map : realgrassTXT , side: THREE.DoubleSide});
+        newplane = new THREE.Mesh(new THREE.PlaneGeometry( 100, plane_lenght, 100 ), newPlanematerial);
+        newplane.rotation.x = Math.PI/2;
+        newplane.position.z = mesh.position.z;
+        newplane.position.z -= 1200.0;
+        newplane.position.y += 1.0;
+        scene.add(newplane);
+
+        
+
+        for(var i = 0; i< 200 ; i+=1){  //da mettere qualcosa che si muove onvece di un albero ogni tanto / monete
+            
+            newT = tree.clone();
+            newT.position.z = mesh.position.z;
+            newT.position.z -= (300 + i *9);
+            newT.position.x = (Math.random()-0.5) * 95;
+
+            r=Math.random()/2 + 0.5; //tra 1 e 1.5
+
+            newT.scale.y = r
+
+            //if (i ==0){alert(mesh.position.z);        alert(newT.position.z);}
+            newT.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI
+        
+            BB_log = new THREE.Box3().setFromObject(newT.children[0]);
+        
+            collidableTreeBoxes.push(BB_log);
+        
+            BB_crown = new THREE.Box3().setFromObject(newT.children[1]);
+
+            collidableTreeBoxes.push(BB_crown);
+            
+            scene.add(newT);
+    
+            if(i%10 == 0){  //ogni tanto mette sassi cose che si muovono?
+
+                    //TODO
+
+            }
+        }
+        flag_p = true;
+        starting_pos = mesh.position.z ;
+    }
+    
+    if(starting_pos - plane_lenght > mesh.position.z ) {
+        flag_p=false;    
+        collidableTreeBoxes = [];
+        return true;
     }
 
+}
 
-    }
-
+function wait1(count){
+    if(count == 1)return true;
+    return false;
 }
 
 
 
 
-
-var fun_count=0;
-var an_f ;
+var fun_count = 0;
+var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [randRing,  MovingRandRing, planelvl]; ///TODO SWITCH F
+    mode = [planelvl, planelvl, wait1, planelvl, randRing,  MovingRandRing ]; ///TODO SWITCH F
 
-    an_f = MovingRandRing;
-    an_f = planelvl();
-
-
-    if(fun_count == 5) {
-        fun_count = 0;
-        an_f = MovingRandRing// TODO random new Function
-    }
     
-    //an_f(fun_count);
+    ret_end = (mode[mode_idx])(fun_count);
+
+    if(ret_end){
+         mode_idx += 1;
+         fun_count = 0;
+    }
 
     fun_count += 1;
+
+
 }
 
 var flagColl=false;
