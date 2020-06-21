@@ -5,7 +5,7 @@ var scene;
 var mesh;
 var stop=false;
 
-var vel = 1.0;
+var vel = 1.1;
 var maxvel = 2.5;
 var minvel = -0.3;
 var angle = -Math.PI/2;//0.0;
@@ -53,6 +53,13 @@ var collision;
 
 //FOG
 var fog_flag = false;
+
+
+//HP BAR
+var sprite_ico_array = [];
+var lifes = 3;  //TODO DIFFICULTY
+var maxlifes = 3;
+var spriteMap;
 
 function init() {
 
@@ -177,7 +184,20 @@ function init() {
 
     container.appendChild( renderer.domElement ); // add the automatically created <canvas> element to the page
 
+    //HEALTH SPRITE
+    spriteMap = new THREE.TextureLoader().load( "textures/heart.png" );
+    var spriteMaterial = new THREE.SpriteMaterial( { map : spriteMap } );
+    spriteMaterial.rotation=Math.PI;
+    sprite_ico = new THREE.Sprite( spriteMaterial );
 
+    for(var i =0;i < lifes; i++){
+        sprite_ico_array[i]=sprite_ico.clone();
+        scene.add(sprite_ico_array[i]);
+    }
+    
+
+
+    //FOG
     if(fog_flag) scene.fog = new THREE.Fog( 0xbbbbbb, 150, 210 );
 
 
@@ -199,6 +219,21 @@ function repositionCam(){
     camera.position.y +=10.0;
     camera.position.z = mesh.position.z;
     camera.position.z += 35.0; 
+
+    for(var i =0;i<maxlifes;i++){
+        sprite_ico_array[i].position.x= mesh.position.x;
+        sprite_ico_array[i].position.y= mesh.position.y;
+        sprite_ico_array[i].position.z= mesh.position.z;
+        sprite_ico_array[i].position.x+= 6.0+(i+1)*1.5;
+        sprite_ico_array[i].position.y-=1.0;
+        sprite_ico_array[i].position.z+=15.0;
+    }
+/*
+    sprite_bar.position.x= mesh.position.x;
+    sprite_bar.position.y= mesh.position.y;
+    sprite_bar.position.z= mesh.position.z;
+    sprite_bar.position.x += 10.0;
+*/
 }
 
 function moveMesh(){
@@ -345,6 +380,12 @@ function createObs(){
 
 }
 
+function remove1life(){
+    lifes-=1;
+    sprite_ico_array[lifes].material= new THREE.SpriteMaterial( { map: spriteMap, color : 0x00ff00, rotation:Math.PI } );
+    scene.add(sprite_ico_array[lifes]);
+}
+
 var flagColl=false;
 
 function CheckCollisions(){
@@ -355,7 +396,13 @@ function CheckCollisions(){
     }
   
     if(collision) {
+
         window.alert("COLLIDE!");
+
+        remove1life();
+
+        //sprite_ico_array[lifes-1].material.color=0x000000;
+
         flagColl = true;
 
         currentHex=mesh.material.emissive.getHex();
