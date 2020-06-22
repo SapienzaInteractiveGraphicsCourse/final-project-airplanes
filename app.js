@@ -43,6 +43,8 @@ var collidableObject = [];  //TODO
 
 var collidableTreeBoxes = [];  //TODO
 var collidableRingAndBoxes = [];
+var lifeBoxes = [];
+
 
 var meshBB;
 var firstBB;
@@ -58,14 +60,19 @@ var fog_flag = true;
 
 //HP BAR
 var sprite_ico_array = [];
-var lifes = 3;  //TODO DIFFICULTY
-var maxlifes = 3;
+var lifes = 4;  //TODO DIFFICULTY
+var maxlifes = 5;
 var spriteMap;
+
+
+// SCORE
+var score = 0;
+var loop = 0;
 
 function init() {
 
     // Container element that hold the scene
-    container = document.querySelector( '#scene-container' );
+    container = document.getElementById('scene-container');
 
     // create a Scene
     scene = new THREE.Scene();
@@ -74,8 +81,8 @@ function init() {
     //perspective cam
     const fov = 35; 
     const aspect = container.clientWidth / container.clientHeight;
-    const near = 0.01;
-    const far = 10000;
+    const near = 0.5;
+    const far = 1000;
 
     camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
     //camera = new THREE.OrthographicCamera( 150, 150, 150, 150, -10, 150);  //OrthographicCamera( left , right , top , bottom , near , far  )
@@ -101,9 +108,9 @@ function init() {
 
     const material2 = new THREE.MeshStandardMaterial( { color: 0xdfdf03 } );
 
-    const ring1 = new THREE.Mesh( new THREE.TorusGeometry( 6, 1, 5  ) , material2 );
+    const ring1 = new THREE.Mesh( new THREE.TorusGeometry( 5, 1, 4  ) , material2 );
 
-    const sphere1 = new THREE.Mesh( new THREE.SphereGeometry( 1, 2, 1 ) , material2 );
+    const sphere1 = new THREE.Mesh( new THREE.SphereGeometry( 1, 3, 1 ) , material2 );
     
     ring1.position.y += 10.0;
 
@@ -120,7 +127,7 @@ function init() {
 
     tree = new THREE.Group(); 
 
-    log = new THREE.Mesh( new THREE.BoxBufferGeometry( 5, 30, 5 ), new THREE.MeshLambertMaterial ({ map : legnoTXT }) );
+    log = new THREE.Mesh( new THREE.BoxBufferGeometry( 7, 30, 7 ), new THREE.MeshLambertMaterial ({ map : legnoTXT }) );
 
     tree.add(log);
     
@@ -182,11 +189,16 @@ function init() {
     var spriteMaterial = new THREE.SpriteMaterial( { map : spriteMap } );
     spriteMaterial.rotation=Math.PI;
     sprite_ico = new THREE.Sprite( spriteMaterial );
-
-    for(var i =0;i < lifes; i++){
-        sprite_ico_array[i]=sprite_ico.clone();
+    
+    for(var i =0;i < maxlifes; i++){
+        sprite_ico_array[i]= new THREE.Sprite( new THREE.SpriteMaterial( { map : spriteMap, rotation : Math.PI } ) );
+        if(i+1>lifes)
+        sprite_ico_array[i].material= new THREE.SpriteMaterial( { map: spriteMap, color : 0x00ff00, rotation:Math.PI } );
         scene.add(sprite_ico_array[i]);
     }
+
+
+    
     
 
 
@@ -225,19 +237,20 @@ function moveMesh(){
     mesh.position.z += Math.sin(angle) * vel; 
     mesh.position.x += Math.cos(angle) * vel; 
     if(mesh.position.y < 5.0) mesh.position.y = 5.0;
-    if(mesh.position.y > 30.0) mesh.position.y = 30.0;
+    if(mesh.position.y > 40.0) mesh.position.y = 40.0;
     if(mesh.position.x > 50.0) mesh.position.x = 50.0;
     if(mesh.position.x < -50.0) mesh.position.x = -50.0;
 
     else  mesh.position.y += Math.sin(angleY) * vel; 
 }
 
-var n_ring_randring = 5;
+var n_ring_randring = 15; //min 3 or overlaps!
 
 
 function randRing(count){
-    if(count == n_ring_randring){ 
-        return true;}
+
+    if(count==0)collidableRingAndBoxes=[];
+    if(count == n_ring_randring){return true;}
 
     new_rs= ring_s.clone();
     new_rs.position.z = mesh.position.z;
@@ -249,7 +262,7 @@ function randRing(count){
     
     BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1);
 
-    collidableRingAndBoxes.push([new_rs,BB_ring]);
+    collidableRingAndBoxes.push([count,BB_ring]);
     
     return false;
 }
@@ -257,10 +270,13 @@ function randRing(count){
 var timerRing = {};
 var rings = {};
 
-var dxr= 1.2;
-var dyr= 1.0;
+var dxr= 0.0;
+var dyr= 0.0;
 
 function MovingRandRing(count){   //TODO True quando finisce
+ 
+    if(count==0)collidableRingAndBoxes=[];
+    if(count == n_ring_randring)return true;
 
     rings[count]= ring_s.clone();
 
@@ -270,6 +286,8 @@ function MovingRandRing(count){   //TODO True quando finisce
     new_rs.position.z -= 250.0;
     new_rs.position.x += (Math.random()-0.5)*50;
     new_rs.position.y = (Math.random()-0.4)*10;
+    if(count>3) dxr = 1.2;
+    if(count>6) dyr = 0.8;
 
     BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1); 
 
@@ -291,7 +309,7 @@ function MovingRandRing(count){   //TODO True quando finisce
      
     collidableRingAndBoxes.push([count,BB_ring]);
 
-    
+ 
 }
 
 var flag_p = false;
@@ -310,25 +328,25 @@ function treelvl(){
         newplane.position.z = mesh.position.z;
         newplane.position.z -= 1200.0;
         newplane.position.y += 1.0;
-        scene.add(newplane);
+        //scene.add(newplane);
 
         
-
-        for(var i = 0; i< 200 ; i+=1){  //da mettere qualcosa che si muove onvece di un albero ogni tanto / monete
+        
+        for(i = 0; i< 200 ; i+=1){  //da mettere qualcosa che si muove onvece di un albero ogni tanto / monete
             
             newT = tree.clone();
             newT.position.z = mesh.position.z;
             newT.position.z -= (300 + i *9);
             newT.position.x = (Math.random()-0.5) * 95;
 
-            r=Math.random()/2 + 0.5; //tra 1 e 1.5
+            r=Math.random()/2 + 0.8; //tra 1 e 1.5
 
             newT.scale.y = r
 
             //if (i ==0){alert(mesh.position.z);        alert(newT.position.z);}
             newT.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI
         
-            BB_log = new THREE.Box3().setFromObject(newT.children[0]).expandByScalar(1);  //TODO respect the model
+            BB_log = new THREE.Box3().setFromObject(newT.children[0]).expandByScalar(1.5);  //TODO respect the model
 
             collidableTreeBoxes.push(BB_log);
         
@@ -337,13 +355,8 @@ function treelvl(){
             collidableTreeBoxes.push(BB_crown);
             
             scene.add(newT);
-    
-            if(i%10 == 0){  //ogni tanto mette sassi cose che si muovono?
-
-                    //TODO
-
-            }
         }
+
         flag_p = true;
         starting_pos = mesh.position.z ;
     }
@@ -357,10 +370,31 @@ function treelvl(){
 }
 
 function wait1(count){
-    collidableRingAndBoxes= [];
-    collidableTreeBoxes = [];
+    window.alert("wait");
     if(count == 1)return true;
     return false;
+}
+
+function end(){
+    //window.alert("end");
+    fun_count=0;
+}
+
+function lifewell(){
+
+    new_r= mesh.clone();
+    new_r.position.z = mesh.position.z;
+    new_r.position.x = 5.0;
+    new_r.position.y = 5.0;
+    new_r.position.z -= 100.0;
+
+    box = new THREE.Box3().setFromObject(new_r);
+
+    lifeBoxes.push(box);
+    
+    scene.add(new_r);
+
+    return true;
 }
 
 
@@ -369,7 +403,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [MovingRandRing, wait1, randRing,  wait1, randRing,  MovingRandRing ]; ///TODO SWITCH F
+    mode = [ lifewell ,end ]//, MovingRandRing, wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
 
     
     ret_end = (mode[mode_idx])(fun_count);
@@ -387,11 +421,17 @@ function createObs(){
 
 function remove1life(){
     lifes-=1;
-    sprite_ico_array[lifes].material= new THREE.SpriteMaterial( { map: spriteMap, color : 0x00ff00, rotation:Math.PI } );
-    scene.add(sprite_ico_array[lifes]);
+    sprite_ico_array[lifes].material.color.r=0.0;
+}
+
+function gain1life(){
+    if(lifes==maxlifes)return;
+    sprite_ico_array[lifes].material.color.r=1.0;
+    lifes+=1;
 }
 
 var flagColl=false;
+var last_coll = -1;
 
 function CheckCollisions(){
     collision = false;
@@ -428,7 +468,7 @@ function CheckCollisions(){
     ring_coll = false;
     idx_col = -1;
 
-    for(i=0; i<collidableRingAndBoxes.length;i++){
+    for(i=0; i<collidableRingAndBoxes.length;i++){ 
         ring_coll = ring_coll || collidableRingAndBoxes[i][1].containsPoint(mesh.position);  //[1] perché coppie
         if(ring_coll){
             idx_col= collidableRingAndBoxes[i][0];
@@ -438,6 +478,20 @@ function CheckCollisions(){
 
     if(idx_col != -1){
         scene.remove( scene.getObjectByName(idx_col) );//collidableRingAndBoxes[idx_col][0]);
+        
+        if(last_coll != idx_col) {last_coll = idx_col; score+=10;}
+    }
+
+    for (i=0;i<lifeBoxes.length;i++){
+        if(lifeBoxes[i].containsPoint(mesh.position) )
+            {
+            lifes+=1;   
+            
+            sprite_ico_array[lifes].material= new THREE.SpriteMaterial( { map: spriteMap, color : 0xffffff, rotation:Math.PI } );
+            scene.add(sprite_ico_array[lifes]);
+
+            window.alert();  //TODO GAIN LIFE
+            }
     }
 }
 
@@ -466,6 +520,10 @@ function animate() {
     
   renderer.render( scene, camera );  //render scene + cam
 
+  //score
+  loop+=1;
+  if(loop % 10 == 0)  score +=0;
+  //document.getElementById("info").innerHTML =score;
 }
 
 // set everything up
