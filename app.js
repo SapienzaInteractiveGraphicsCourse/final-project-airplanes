@@ -99,7 +99,7 @@ function init() {
     
 
 
-    const material2 = new THREE.MeshStandardMaterial( { color: 0x101080 } );
+    const material2 = new THREE.MeshStandardMaterial( { color: 0xdfdf03 } );
 
     const ring1 = new THREE.Mesh( new THREE.TorusGeometry( 6, 1, 5  ) , material2 );
 
@@ -194,17 +194,14 @@ function init() {
     if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 200, 300 );
 
 
+    //TEST LOAD MODELLO
+
 
 
 }
 
-/*
-function passed_inside(p){
-    myBB=myBB.applyMatrix4( mesh.matrixWorld );
-    
-    if( myBB.containsPoint(p))return true;
-    return false;
-}*/
+
+
 
 function repositionCam(){
     camera.position.x = mesh.position.x;
@@ -221,12 +218,6 @@ function repositionCam(){
         sprite_ico_array[i].position.y-=1.0;
         sprite_ico_array[i].position.z+=15.0;
     }
-/*
-    sprite_bar.position.x= mesh.position.x;
-    sprite_bar.position.y= mesh.position.y;
-    sprite_bar.position.z= mesh.position.z;
-    sprite_bar.position.x += 10.0;
-*/
 }
 
 function moveMesh(){
@@ -267,33 +258,38 @@ var timerRing = {};
 var rings = {};
 
 var dxr= 1.2;
+var dyr= 1.0;
 
-function MovingRandRing(count){
+function MovingRandRing(count){   //TODO True quando finisce
 
     rings[count]= ring_s.clone();
 
     new_rs= rings[count];
+    new_rs.name = count;
     new_rs.position.z = mesh.position.z;
-    new_rs.position.z -= 200.0;
+    new_rs.position.z -= 250.0;
     new_rs.position.x += (Math.random()-0.5)*50;
+    new_rs.position.y = (Math.random()-0.4)*10;
 
-    BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1);
+    BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1); 
 
     new_rs.userData=BB_ring;
 
     renderer.setAnimationLoop( function () {
-        if(rings[count].position.x > 25.0) dxr= -dxr;
-        if(rings[count].position.x < -25.0) dxr= -dxr;
+        if(rings[count].position.x > 30.0) dxr= -dxr;
+        if(rings[count].position.x < -30.0) dxr= -dxr;
+        if(rings[count].position.y > 20.0) dyr= -dyr;
+        if(rings[count].position.y < -5.0) dyr= -dyr;
         rings[count].position.x += dxr;
-        BB_ring.translate(new THREE.Vector3( dxr, 0, 0 ));
-
+        rings[count].position.y += dyr;
+        BB_ring.translate(new THREE.Vector3( dxr, dyr, 0 ));
       } );
 
     scene.add(rings[count]);
 
     
      
-    collidableRingAndBoxes.push([new_rs,BB_ring]);
+    collidableRingAndBoxes.push([count,BB_ring]);
 
     
 }
@@ -368,8 +364,6 @@ function wait1(count){
 }
 
 
-
-
 var fun_count = 0;
 var mode_idx = 0 ;
 
@@ -432,16 +426,19 @@ function CheckCollisions(){
         }
     
     ring_coll = false;
+    idx_col = -1;
 
     for(i=0; i<collidableRingAndBoxes.length;i++){
         ring_coll = ring_coll || collidableRingAndBoxes[i][1].containsPoint(mesh.position);  //[1] perché coppie
         if(ring_coll){
-            scene.remove(collidableRingAndBoxes[i][0]);
-            collidableRingAndBoxes.splice(i,1);
+            idx_col= collidableRingAndBoxes[i][0];
+            ring_coll = false;
         }
     }
 
-    
+    if(idx_col != -1){
+        scene.remove( scene.getObjectByName(idx_col) );//collidableRingAndBoxes[idx_col][0]);
+    }
 }
 
 
@@ -459,24 +456,14 @@ function animate() {
   if( pos < old_pos - obs_delay && pos != 0.0 ) {
       old_pos = pos;
       createObs(); 
-      if(vel < maxvel) vel=vel*1.05;
+      if(vel < maxvel) vel=vel*1.01;
     }
   
   repositionCam();
   
   if(!flagColl)
   CheckCollisions();
-  
-
-  
-
-
-  //group.position.x += 0.01;  
-
-  //if( passed_inside(group.children[1].position) ) group.children[1].material.color.setHex( 0x0fffff );
-
- 
-  
+    
   renderer.render( scene, camera );  //render scene + cam
 
 }
@@ -486,6 +473,28 @@ init();
 
 // render the scene
 animate();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -499,8 +508,6 @@ function goup(){
     angleY += Math.PI/70;
     mesh.rotation.z = angleY/4;
     }
-    //if(vel < maxvel)
-    //vel += 0.05
 }
 
 function godown(){
@@ -508,7 +515,6 @@ function godown(){
     angleY -= Math.PI/70;
     mesh.rotation.z = angleY/4;
     }
-    //vel -= 0.05
 }
 
 function goright(){
@@ -586,106 +592,3 @@ Controller({
     32: function() { pause();}
 }, 30);
 
-
-
-/*
-document.onkeydown = function(e) {
-
-    if(e.keyCode in map){
-        map[e.keyCode] = true;
-
-        if ( map[87])  goup();
-
-        if ( map[83]) godown();
-        
-        if ( map[65])  goleft();
-        
-        if ( map[68])  goright();
-
-        if ( map[75]) accelerate();
-
-        if ( map[76]) decelerate();
-        
-    }else if(e.keyCode == 32){
-        if( Math.abs(vel) < maxvel) 
-            vel = vel * 1.1;
-    }
-}
-
-document.onkeyup = function(e) {
-    if(e.keyCode in map){
-        map[e.keyCode] = false;
-    }
-}
-
-
-
-
-
-
-    switch (e.keyCode) {
-
-        case 87:  //w
-            if(angleY < Math.PI/2)
-            angleY += Math.PI/16;
-            
-            //vel += 0.05
-            
-            break;
-
-        case 65: //a
-
-            angle -= Math.PI/16;
-            mesh.rotation.y = -angle;
-            break;
-
-        case 68: //d
-            angle += Math.PI/16;
-            mesh.rotation.y = -angle;
-            break;
-
-        case 83: //s
-            if(angleY > -Math.PI/2)
-            angleY -= Math.PI/16;
-            //vel -= 0.05
-            break;
-
-        case 32://space
-            if( Math.abs(vel) < maxvel) 
-                vel = vel * 1.1;
-            break;
-    }
-   
-};
-
-
-document.onkeyup = function(e) {
-    if(e.keyCode == 32)stop = !stop; 
-    if(stop)return;
-
-    switch (e.keyCode) {
-
-        case 87:  //w
-
-            dx =0.0;
-            
-            break;
-
-        case 65: //a
-
-            mesh.position.x -=0.5;
-            break;
-
-        case 68: //d
-            mesh.position.x +=0.5;
-            break;
-
-        case 83: //s
-            mesh.position.y -=0.5;
-            break;
-
-        case 32://space
-            stop = !stop;
-            break;
-    }
-};*/
