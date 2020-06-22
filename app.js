@@ -193,7 +193,7 @@ function init() {
     for(var i =0;i < maxlifes; i++){
         sprite_ico_array[i]= new THREE.Sprite( new THREE.SpriteMaterial( { map : spriteMap, rotation : Math.PI } ) );
         if(i+1>lifes)
-        sprite_ico_array[i].material= new THREE.SpriteMaterial( { map: spriteMap, color : 0x00ff00, rotation:Math.PI } );
+        sprite_ico_array[i].material= new THREE.SpriteMaterial( { map: spriteMap, color : 0x00ffff, rotation:Math.PI } );
         scene.add(sprite_ico_array[i]);
     }
 
@@ -336,14 +336,13 @@ function treelvl(){
             
             newT = tree.clone();
             newT.position.z = mesh.position.z;
-            newT.position.z -= (300 + i *9);
+            newT.position.z -= (300 + i *7);
             newT.position.x = (Math.random()-0.5) * 95;
 
             r=Math.random()/2 + 0.8; //tra 1 e 1.5
 
             newT.scale.y = r
 
-            //if (i ==0){alert(mesh.position.z);        alert(newT.position.z);}
             newT.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI
         
             BB_log = new THREE.Box3().setFromObject(newT.children[0]).expandByScalar(1.5);  //TODO respect the model
@@ -382,15 +381,16 @@ function end(){
 
 function lifewell(){
 
-    new_r= mesh.clone();
+    new_r = new THREE.Mesh( new THREE.BoxBufferGeometry( 10, 10, 10 ),  new THREE.MeshStandardMaterial( { map: spriteMap } ) );
     new_r.position.z = mesh.position.z;
     new_r.position.x = 5.0;
-    new_r.position.y = 5.0;
-    new_r.position.z -= 100.0;
+    new_r.position.y = 10.0;
+    new_r.position.z -= 200.0;
+    new_r.rotation.z = Math.PI;
 
     box = new THREE.Box3().setFromObject(new_r);
 
-    lifeBoxes.push(box);
+    lifeBoxes.push([new_r,box]);
     
     scene.add(new_r);
 
@@ -403,7 +403,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [ lifewell ,end ]//, MovingRandRing, wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
+    mode = [MovingRandRing, wait1, treelvl , lifewell , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
 
     
     ret_end = (mode[mode_idx])(fun_count);
@@ -433,6 +433,8 @@ function gain1life(){
 var flagColl=false;
 var last_coll = -1;
 
+var life_flag_coll = true;
+
 function CheckCollisions(){
     collision = false;
 
@@ -454,13 +456,13 @@ function CheckCollisions(){
 
         mesh.material.emissive.setHex(0xff00ff);
         
-        window.setTimeout(function(){ mesh.material.emissive.setHex(  currentHex  );  },500);
+        window.setTimeout(function(){ mesh.material.emissive.setHex(  currentHex  ); sprite_ico_array[lifes].material.color.r=1.0; },500);
         
-        window.setTimeout(function(){  mesh.material.emissive.setHex(  0xff00ff  );  },1000);
+        window.setTimeout(function(){  mesh.material.emissive.setHex(  0xff00ff  ); sprite_ico_array[lifes].material.color.r=0.0; },1000);
 
-        window.setTimeout(function(){ mesh.material.emissive.setHex(  currentHex  );  },1500);
+        window.setTimeout(function(){ mesh.material.emissive.setHex(  currentHex  ); sprite_ico_array[lifes].material.color.r=1.0; },1500);
         
-        window.setTimeout(function(){  mesh.material.emissive.setHex(  0xff00ff  );  },2000);
+        window.setTimeout(function(){  mesh.material.emissive.setHex(  0xff00ff  ); sprite_ico_array[lifes].material.color.r=0.0; },2000);
 
         window.setTimeout(function(){  mesh.material.emissive.setHex(  currentHex  );  flagColl=false; },3000);
         }
@@ -483,15 +485,12 @@ function CheckCollisions(){
     }
 
     for (i=0;i<lifeBoxes.length;i++){
-        if(lifeBoxes[i].containsPoint(mesh.position) )
-            {
-            lifes+=1;   
-            
-            sprite_ico_array[lifes].material= new THREE.SpriteMaterial( { map: spriteMap, color : 0xffffff, rotation:Math.PI } );
-            scene.add(sprite_ico_array[lifes]);
-
-            window.alert();  //TODO GAIN LIFE
-            }
+        if(lifeBoxes[i][1].containsPoint(mesh.position) && life_flag_coll ){
+            life_flag_coll = false; //no subsequent life coll
+             gain1life();
+             scene.remove(lifeBoxes[i][0]);
+             window.setTimeout(function(){ life_flag_coll=false; },3000);
+        }
     }
 }
 
