@@ -8,10 +8,13 @@ var stop=false;
 var vel = 1.1;
 var maxvel = 2.5;
 var minvel = -0.3;
-var angle = -Math.PI/2;//0.0;
-var angleY = 0.0;
+var angleY = -Math.PI/2;//0.0;  ///for V not orientation
+var angleX = 0.0;
 var dx = 0.0;
 var dz = 0.0;
+
+var baseAngleY = -Math.PI;
+var baseangleX = 0;
 
 
 var ring1;
@@ -23,7 +26,7 @@ var three;
 //texture
 var legnoTXT = new THREE.TextureLoader().load( 'textures/marr.PNG' );
 legnoTXT.wrapS = legnoTXT.wrapT = THREE.RepeatWrapping;
-legnoTXT.offset.set( 10, 0 );
+legnoTXT.offset.set( 1, 0 );
 var greenpaintTXT = new THREE.TextureLoader().load( 'textures/green-paint.jpg' );
 var realgrassTXT = new THREE.TextureLoader().load( 'textures/lightgrass.jpg' );
 realgrassTXT.wrapS = THREE.RepeatWrapping; 
@@ -32,7 +35,7 @@ realgrassTXT.repeat.set( 1, 10 );
 var grassTXT = new THREE.TextureLoader().load( 'textures/poligrass.jpg' );
 grassTXT.wrapS = THREE.RepeatWrapping; 
 grassTXT.wrapT = THREE.RepeatWrapping;
-grassTXT.repeat.set( 0, 10 );
+grassTXT.repeat.set( 1, 200 );
 Planematerial = new THREE.MeshBasicMaterial({ map : grassTXT , side: THREE.DoubleSide});
 plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, 20000, 100 ), Planematerial);
 plane.rotation.x = Math.PI/2;
@@ -102,7 +105,7 @@ function init() {
     const material = new THREE.MeshStandardMaterial( { color: 0x800080 } );
 
     mesh = new THREE.Mesh( geometry, material );
-    mesh.rotation.y = -angle;
+    mesh.rotation.y = -Math.PI/2;
     
 
 
@@ -207,10 +210,45 @@ function init() {
 
 
     //TEST LOAD MODELLO
+     // Instantiate a loader
+    var loader = new THREE.GLTFLoader();
 
+    // Load a glTF resource
+    loader.load(// resource URL
+        'models/planee/scene.gltf',
+        // called when the resource is loaded
+        function ( gltf ) {
+            gltf.scene.position.y = 0.0;
+            gltf.scene.position.x = 0.0;
+            gltf.scene.position.z =-100.0;
+            gltf.scene.rotation.y = baseAngleY;
+            
+            //gltf.scene.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0).normalize(), Math.PI);
+            //gltf.scene.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1).normalize(), Math.PI);
+            mesh=gltf.scene ;
+            scene.add( gltf.scene );
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+        },
+        // called while loading is progressing
+        function ( xhr ) {
 
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
+        },
+        // called when loading has errors
+        function ( error ) {
+
+            console.log( "[MODEL LOADER] " + error );
+
+        }
+    );
+      
 }
+
+
 
 
 
@@ -234,14 +272,14 @@ function repositionCam(){
 
 function moveMesh(){
     //move
-    mesh.position.z += Math.sin(angle) * vel; 
-    mesh.position.x += Math.cos(angle) * vel; 
+    mesh.position.z += Math.sin(angleY) * vel; 
+    mesh.position.x += Math.cos(angleY) * vel; 
     if(mesh.position.y < 5.0) mesh.position.y = 5.0;
     if(mesh.position.y > 40.0) mesh.position.y = 40.0;
     if(mesh.position.x > 50.0) mesh.position.x = 50.0;
     if(mesh.position.x < -50.0) mesh.position.x = -50.0;
 
-    else  mesh.position.y += Math.sin(angleY) * vel; 
+    else  mesh.position.y += Math.sin(angleX) * vel; 
 }
 
 var n_ring_randring = 15; //min 3 or overlaps!
@@ -336,8 +374,8 @@ function treelvl(){
             
             newT = tree.clone();
             newT.position.z = mesh.position.z;
-            newT.position.z -= (300 + i *7);
-            newT.position.x = (Math.random()-0.5) * 95;
+            newT.position.z -= (300 + i *20);  ///da fare in relazione alla plane lenght x la difficoltà
+            newT.position.x = (Math.random()-0.5) * 95; 
 
             r=Math.random()/2 + 0.8; //tra 1 e 1.5
 
@@ -403,7 +441,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [MovingRandRing, wait1, treelvl , lifewell , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
+    mode = [treelvl, treelvl    , MovingRandRing , MovingRandRing , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
 
     
     ret_end = (mode[mode_idx])(fun_count);
@@ -452,19 +490,17 @@ function CheckCollisions(){
 
         flagColl = true;
 
-        currentHex=mesh.material.emissive.getHex();
-
-        mesh.material.emissive.setHex(0xff00ff);
+        mesh.visible = false;
         
-        window.setTimeout(function(){ mesh.material.emissive.setHex(  currentHex  ); sprite_ico_array[lifes].material.color.r=1.0; },500);
+        window.setTimeout(function(){ mesh.visible = true; sprite_ico_array[lifes].material.color.r=1.0; },500);
         
-        window.setTimeout(function(){  mesh.material.emissive.setHex(  0xff00ff  ); sprite_ico_array[lifes].material.color.r=0.0; },1000);
+        window.setTimeout(function(){ mesh.visible = false; sprite_ico_array[lifes].material.color.r=0.0; },1000);
 
-        window.setTimeout(function(){ mesh.material.emissive.setHex(  currentHex  ); sprite_ico_array[lifes].material.color.r=1.0; },1500);
+        window.setTimeout(function(){ mesh.visible = true; sprite_ico_array[lifes].material.color.r=1.0; },1500);
         
-        window.setTimeout(function(){  mesh.material.emissive.setHex(  0xff00ff  ); sprite_ico_array[lifes].material.color.r=0.0; },2000);
+        window.setTimeout(function(){  mesh.visible = false; sprite_ico_array[lifes].material.color.r=0.0; },2000);
 
-        window.setTimeout(function(){  mesh.material.emissive.setHex(  currentHex  );  flagColl=false; },3000);
+        window.setTimeout(function(){  mesh.visible = true;  flagColl=false; },3000);
         }
     
     ring_coll = false;
@@ -561,30 +597,30 @@ var map = {87: false, 65: false, 68: false, 83: false,75: false, 76:false };
 
 
 function goup(){
-    if(angleY < Math.PI/4){
-    angleY += Math.PI/70;
-    mesh.rotation.z = angleY/4;
+    if(angleX < Math.PI/4){
+    angleX += Math.PI/70;
+    mesh.rotation.x =  angleX/4;
     }
 }
 
 function godown(){
-    if(angleY > -Math.PI/4){
-    angleY -= Math.PI/70;
-    mesh.rotation.z = angleY/4;
+    if(angleX > -Math.PI/4){
+    angleX -= Math.PI/70;
+    mesh.rotation.x =  angleX/4;
     }
 }
 
 function goright(){
-    if(angle < -Math.PI/12  ){
-    angle += Math.PI/100;
-    mesh.rotation.y = -angle;
+    if(angleY < -Math.PI/12  ){
+    angleY += Math.PI/100;
+    mesh.rotation.y = -angleY + Math.PI/2  ;
     }
 }
 
 function goleft(){
-    if(angle > -11*Math.PI/12  ){
-    angle -= Math.PI/100;
-    mesh.rotation.y = -angle;
+    if(angleY > -11*Math.PI/12  ){
+    angleY -= Math.PI/100;
+    mesh.rotation.y = -angleY + Math.PI/2  ;
     }
 }
 
