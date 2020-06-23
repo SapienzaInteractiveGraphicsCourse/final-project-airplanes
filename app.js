@@ -36,7 +36,7 @@ var grassTXT = new THREE.TextureLoader().load( 'textures/poligrass.jpg' );
 grassTXT.wrapS = THREE.RepeatWrapping; 
 grassTXT.wrapT = THREE.RepeatWrapping;
 grassTXT.repeat.set( 1, 200 );
-Planematerial = new THREE.MeshBasicMaterial({ map : grassTXT , side: THREE.DoubleSide});
+Planematerial = new THREE.MeshPhongMaterial({ map : grassTXT , side: THREE.DoubleSide});
 plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, 20000, 100 ), Planematerial);
 plane.rotation.x = Math.PI/2;
 
@@ -71,6 +71,10 @@ var spriteMap;
 // SCORE
 var score = 0;
 var loop = 0;
+
+//LIGHTS
+var spotLight;
+
 
 function init() {
 
@@ -107,9 +111,9 @@ function init() {
     mesh = new THREE.Mesh( geometry, material );
     mesh.rotation.y = -Math.PI/2;
     
+    //-----// RING model //-----//
 
-
-    const material2 = new THREE.MeshStandardMaterial( { color: 0xdfdf03 } );
+    const material2 = new THREE.MeshPhongMaterial ( { color: 0xdfdf03 } );
 
     const ring1 = new THREE.Mesh( new THREE.TorusGeometry( 5, 1, 4  ) , material2 );
 
@@ -122,19 +126,19 @@ function init() {
     ring_s = new THREE.Group();
 
     ring_s.add( ring1 );
-
     ring_s.add( sphere1 );
-
     scene.add( ring_s );
 
 
+    //-----// TREE model //-----//
+
     tree = new THREE.Group(); 
 
-    log = new THREE.Mesh( new THREE.BoxBufferGeometry( 7, 30, 7 ), new THREE.MeshLambertMaterial ({ map : legnoTXT }) );
+    log = new THREE.Mesh( new THREE.BoxBufferGeometry( 7, 30, 7 ), new THREE.MeshPhongMaterial ({ map : legnoTXT }) );
 
     tree.add(log);
     
-    crown = new THREE.Mesh( new THREE.BoxBufferGeometry( 20, 15, 20 ), new THREE.MeshLambertMaterial({ map : greenpaintTXT }) ) ;
+    crown = new THREE.Mesh( new THREE.BoxBufferGeometry( 20, 15, 20 ), new THREE.MeshPhongMaterial({ map : greenpaintTXT }) ) ;
 
     crown.position.y=20.0;
 
@@ -162,17 +166,14 @@ function init() {
 
     scene.add(tree); //4DEBUGGING
 
-
-
     scene.add( plane );
 
     scene.add( mesh );
 
 
-    // Create a directional light and add it to the scene
-    const light = new THREE.DirectionalLight( 0xaaaaaa, 5.0 );
-    light.position.set( 30, 30, 30 ); //move light up 
-    scene.add( light );
+    //-----//    //-----//
+
+
 
 
     // create a WebGLRenderer and set its width and height
@@ -181,13 +182,18 @@ function init() {
     renderer.setPixelRatio( window.devicePixelRatio );
 
 
+    //ORBIT//
     //controls = new THREE.OrbitControls( camera, renderer.domElement );
-
     //controls.update(); // have to be called after any manual changes to the camera's transform
 
-    container.appendChild( renderer.domElement ); // add the automatically created <canvas> element to the page
 
-    //HEALTH SPRITE
+    // add the automatically created <canvas> element to the page
+    container.appendChild( renderer.domElement ); 
+
+
+
+
+    //HEALTH SPRITE//
     spriteMap = new THREE.TextureLoader().load( "textures/heart.png" );
     var spriteMaterial = new THREE.SpriteMaterial( { map : spriteMap } );
     spriteMaterial.rotation=Math.PI;
@@ -223,8 +229,6 @@ function init() {
             gltf.scene.position.z =-100.0;
             gltf.scene.rotation.y = baseAngleY;
             
-            //gltf.scene.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0).normalize(), Math.PI);
-            //gltf.scene.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1).normalize(), Math.PI);
             mesh=gltf.scene ;
             scene.add( gltf.scene );
             gltf.scene; // THREE.Group
@@ -245,6 +249,32 @@ function init() {
 
         }
     );
+
+
+    ////
+
+    // Create a directional light and add it to the scene
+    const light = new THREE.DirectionalLight( 0xaaaaaa, 1.25);
+    light.position.set( 30, 30, 30 ); //move light up 
+    scene.add( light );
+
+
+    spotLight = new THREE.SpotLight( 0xaaaaaa, 1 );
+
+        spotLight.position.set( 0, -10, -300 );
+        spotLight.angle = Math.PI / 10;
+        spotLight.penumbra = 0.05;
+        spotLight.decay = 0.0;
+        spotLight.distance = 200;
+        spotLight.target.position.set(0,-100,-1000);
+        spotLight.target.updateMatrixWorld();
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+        spotLight.shadow.camera.near = -10;
+        spotLight.shadow.camera.far = -200;
+    
+        scene.add( spotLight );
       
 }
 
@@ -268,6 +298,12 @@ function repositionCam(){
         sprite_ico_array[i].position.y-=1.0;
         sprite_ico_array[i].position.z+=15.0;
     }
+
+    spotLight.position.set( mesh.position.x, mesh.position.y, mesh.position.z );
+    spotLight.target.position.set(  mesh.position.x + Math.cos(angleY),
+                                    mesh.position.y + Math.sin(angleX)/5, 
+                                    mesh.position.z + Math.sin(angleY));
+    spotLight.target.updateMatrixWorld();
 }
 
 function moveMesh(){
@@ -324,6 +360,9 @@ function MovingRandRing(count){   //TODO True quando finisce
     new_rs.position.z -= 250.0;
     new_rs.position.x += (Math.random()-0.5)*50;
     new_rs.position.y = (Math.random()-0.4)*10;
+
+    ////
+
     if(count>3) dxr = 1.2;
     if(count>6) dyr = 0.8;
 
@@ -343,8 +382,6 @@ function MovingRandRing(count){   //TODO True quando finisce
 
     scene.add(rings[count]);
 
-    
-     
     collidableRingAndBoxes.push([count,BB_ring]);
 
  
@@ -360,7 +397,7 @@ function treelvl(){
 
     if(!flag_p){ //crea il piano
         
-        newPlanematerial = new THREE.MeshBasicMaterial({ map : realgrassTXT , side: THREE.DoubleSide});
+        newPlanematerial = new THREE.MeshPhongMaterial({ map : realgrassTXT , side: THREE.DoubleSide});
         newplane = new THREE.Mesh(new THREE.PlaneGeometry( 100, plane_lenght, 100 ), newPlanematerial);
         newplane.rotation.x = Math.PI/2;
         newplane.position.z = mesh.position.z;
@@ -374,7 +411,7 @@ function treelvl(){
             
             newT = tree.clone();
             newT.position.z = mesh.position.z;
-            newT.position.z -= (300 + i *20);  ///da fare in relazione alla plane lenght x la difficoltà
+            newT.position.z -= (300 + i *9);  ///da fare in relazione alla plane lenght x la difficoltà
             newT.position.x = (Math.random()-0.5) * 95; 
 
             r=Math.random()/2 + 0.8; //tra 1 e 1.5
@@ -441,7 +478,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [treelvl, treelvl    , MovingRandRing , MovingRandRing , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
+    mode = [MovingRandRing,MovingRandRing, treelvl    , MovingRandRing , MovingRandRing , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
 
     
     ret_end = (mode[mode_idx])(fun_count);
@@ -638,7 +675,9 @@ function pause(){
     window.alert("gioco in pausa");
 }
 
-
+document.addEventListener('keydown', function(event){
+    if(event.keyCode == 76) spotLight.intensity = (spotLight.intensity+1 )% 2;
+    } );
 
 function Controller(keys, repeat) {
     
