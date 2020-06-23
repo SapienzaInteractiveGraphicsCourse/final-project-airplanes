@@ -5,7 +5,7 @@ var scene;
 var mesh;
 var stop=false;
 
-var vel = 1.1;
+var vel = 0.5;
 var maxvel = 2.5;
 var minvel = -0.3;
 var angleY = -Math.PI/2;//0.0;  ///for V not orientation
@@ -75,6 +75,124 @@ var loop = 0;
 //LIGHTS
 var spotLight;
 
+
+//MODEL
+var rock;
+var boxRock;
+
+function loadModels(){
+
+    //TEST LOAD MODELLO
+     // Instantiate a loader
+     var loader = new THREE.GLTFLoader();
+
+     // Load a glTF resource
+    { loader.load(// resource URL
+         'models/planee/scene.gltf',
+         // called when the resource is loaded
+         function ( gltf ) {
+             gltf.scene.position.y = 0.0;
+             gltf.scene.position.x = 0.0;
+             gltf.scene.position.z =-100.0;
+             gltf.scene.rotation.y = baseAngleY;
+             
+             mesh=gltf.scene ;
+             scene.add( gltf.scene );
+             gltf.scene; // THREE.Group
+             gltf.scenes; // Array<THREE.Group>
+             gltf.cameras; // Array<THREE.Camera>
+             gltf.asset; // Object
+         },
+         // called while loading is progressing
+         function ( xhr ) {
+ 
+             console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+ 
+         },
+         // called when loading has errors
+         function ( error ) {
+ 
+             console.log( "[MODEL LOADER] " + error );
+ 
+         }
+     );
+    }
+         // Load a glTF resource
+     
+ 
+     loader.load(// resource URL
+         'models/log/scene.gltf',
+         // called when the resource is loaded
+         function ( gltf ) {
+             
+             gltf.scene.position.x = 10.0;
+             gltf.scene.position.z =-300.0;
+             gltf.scene.position.y = 20.0; 
+             gltf.scene.rotation.z = -Math.PI/2;
+             gltf.scene.rotation.y = Math.PI/2;
+             gltf.scene.scale.set(0.015,0.02,0.02);  //Y X Z
+             
+            
+             gltf.scene; // THREE.Group
+             gltf.scenes; // Array<THREE.Group>
+             gltf.cameras; // Array<THREE.Camera>
+             gltf.asset; // Object
+ 
+             
+         },
+         // called while loading is progressing
+         function ( xhr ) {
+ 
+             console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+ 
+         },
+         // called when loading has errors
+         function ( error ) {
+ 
+             console.log( "[MODEL LOADER] " + error );
+ 
+         }
+     );
+
+     loader.load(// resource URL
+        'models/rocks/scene.gltf',
+        // called when the resource is loaded
+        function ( gltf ) {
+            gltf.scene.position.y = 0.0;
+            gltf.scene.position.x = 10.0;
+            gltf.scene.position.z =-300.0;
+            gltf.scene.scale.set(0.02,0.04,0.02);
+           
+            scene.add( gltf.scene );
+
+            rock=gltf.scene;
+
+            boxRock = new THREE.Box3().setFromObject(rock);
+
+            collidableTreeBoxes.push(boxRock);
+
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+
+            
+        },
+        // called while loading is progressing
+        function ( xhr ) {
+
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+        },
+        // called when loading has errors
+        function ( error ) {
+
+            console.log( "[MODEL LOADER] " + error );
+
+        }
+    );
+
+}
 
 function init() {
 
@@ -215,41 +333,9 @@ function init() {
     if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 200, 300 );
 
 
-    //TEST LOAD MODELLO
-     // Instantiate a loader
-    var loader = new THREE.GLTFLoader();
-
-    // Load a glTF resource
-    loader.load(// resource URL
-        'models/planee/scene.gltf',
-        // called when the resource is loaded
-        function ( gltf ) {
-            gltf.scene.position.y = 0.0;
-            gltf.scene.position.x = 0.0;
-            gltf.scene.position.z =-100.0;
-            gltf.scene.rotation.y = baseAngleY;
-            
-            mesh=gltf.scene ;
-            scene.add( gltf.scene );
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-        },
-        // called while loading is progressing
-        function ( xhr ) {
-
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-        },
-        // called when loading has errors
-        function ( error ) {
-
-            console.log( "[MODEL LOADER] " + error );
-
-        }
-    );
-
+    loadModels();
+    
+   
 
     ////
 
@@ -277,7 +363,6 @@ function init() {
         scene.add( spotLight );
       
 }
-
 
 
 
@@ -391,27 +476,29 @@ var flag_p = false;
 var flag_endlvl = false;
 
 var starting_pos;
-var plane_lenght = 2200.0;
+var n_tree= 100;
+var space = 10;
+var plane_lenght = n_tree * space;
 
 function treelvl(){
 
     if(!flag_p){ //crea il piano
         
         newPlanematerial = new THREE.MeshPhongMaterial({ map : realgrassTXT , side: THREE.DoubleSide});
-        newplane = new THREE.Mesh(new THREE.PlaneGeometry( 100, plane_lenght, 100 ), newPlanematerial);
+        newplane = new THREE.Mesh(new THREE.PlaneGeometry( 100, n_tree*space , 100 ), newPlanematerial);
         newplane.rotation.x = Math.PI/2;
         newplane.position.z = mesh.position.z;
-        newplane.position.z -= 1200.0;
+        newplane.position.z -= 1000.0;
         newplane.position.y += 1.0;
         //scene.add(newplane);
 
         
         
-        for(i = 0; i< 200 ; i+=1){  //da mettere qualcosa che si muove onvece di un albero ogni tanto / monete
+        for(i = 0; i< n_tree ; i+=1){  //da mettere qualcosa che si muove onvece di un albero ogni tanto / monete
             
             newT = tree.clone();
             newT.position.z = mesh.position.z;
-            newT.position.z -= (300 + i *9);  ///da fare in relazione alla plane lenght x la difficoltà
+            newT.position.z -= (300 + i *  space    );  
             newT.position.x = (Math.random()-0.5) * 95; 
 
             r=Math.random()/2 + 0.8; //tra 1 e 1.5
@@ -429,6 +516,8 @@ function treelvl(){
             collidableTreeBoxes.push(BB_crown);
             
             scene.add(newT);
+
+            
         }
 
         flag_p = true;
@@ -478,9 +567,8 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [MovingRandRing,MovingRandRing, treelvl    , MovingRandRing , MovingRandRing , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
+    mode = [treelvl,MovingRandRing, treelvl, MovingRandRing , MovingRandRing , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
 
-    
     ret_end = (mode[mode_idx])(fun_count);
 
     if(ret_end){
@@ -519,7 +607,7 @@ function CheckCollisions(){
   
     if(collision) {
 
-        window.alert("COLLIDE!");
+        //window.alert("COLLIDE!");
 
         remove1life();
 
