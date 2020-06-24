@@ -58,12 +58,13 @@ var collision;
 
 
 //FOG
+var background_color= 0x8FFFFF;
 var fog_flag = true;
 
 
 //HP BAR
 var sprite_ico_array = [];
-var lifes = 4;  //TODO DIFFICULTY
+var lifes = 5;  //TODO DIFFICULTY
 var maxlifes = 5;
 var spriteMap;
 
@@ -73,6 +74,7 @@ var score = 0;
 var loop = 0;
 
 //LIGHTS
+var light;
 var spotLight;
 
 
@@ -218,6 +220,37 @@ function loadModels(){
         }
     );
 
+    loader.load(// resource URL
+        'models/bigPlane/scene.gltf',
+        // called when the resource is loaded
+        function ( gltf ) {
+            gltf.scene.position.y = 0.0;
+            gltf.scene.position.x = 0.0;
+            gltf.scene.scale.set(0.3,0.3,0.3);
+            //gltf.scene.rotation.y = Math.PI;
+            mesh =  gltf.scene;
+
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+
+            
+        },
+        // called while loading is progressing
+        function ( xhr ) {
+
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+        },
+        // called when loading has errors
+        function ( error ) {
+
+            console.log( "[MODEL LOADER] " + error );
+
+        }
+    );
+
 
 }
 
@@ -228,7 +261,7 @@ function init() {
 
     // create a Scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0x8FFFFF );
+    scene.background = new THREE.Color( background_color );
 
     //perspective cam
     const fov = 35; 
@@ -369,7 +402,7 @@ function init() {
     ////
 
     // Create a directional light and add it to the scene
-    const light = new THREE.DirectionalLight( 0xaaaaaa, 1.25);
+    light = new THREE.DirectionalLight( 0xaaaaaa, 1.25);
     light.position.set( 30, 30, 30 ); //move light up 
     scene.add( light );
 
@@ -434,27 +467,6 @@ function moveMesh(){
 
 var n_ring_randring = 15; //min 3 or overlaps!
 
-
-function randRing(count){
-
-    if(count==0)collidableRingAndBoxes=[];
-    if(count == n_ring_randring){return true;}
-
-    new_rs= ring_s.clone();
-    new_rs.position.z = mesh.position.z;
-    new_rs.position.z -= 200.0;
-    new_rs.position.x += (Math.random()-0.5)*50;
-    if(count > 2) new_rs.position.y += (Math.random())*10;
-    scene.add(new_rs);
-
-    
-    BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1);
-
-    collidableRingAndBoxes.push([count,BB_ring]);
-    
-    return false;
-}
-
 var timerRing = {};
 var rings = {};
 
@@ -477,9 +489,9 @@ function createRock(x,y,z){
 function MovingRandRing(count){  
     
     if(count==0)collidableRingAndBoxes=[];
-    if(count == n_ring_randring)return true;
+    if(count == n_ring_randring){renderer.setAnimationLoop( function () {}); return true;}
 
-    createRock(-1,0,-200);
+    //createRock(-1,0,-200);
 
     rings[count]= ring_s.clone();
 
@@ -493,8 +505,8 @@ function MovingRandRing(count){
     ////
 
     if(count>3) dxr = 1.2;
-    if(count>6) dyr = 0.8;
-
+    if(count>7) dyr = 0.8;
+    if(count>12) dyr += 0.5;
     BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1); 
 
     new_rs.userData=BB_ring;
@@ -520,8 +532,8 @@ var flag_p = false;
 var flag_endlvl = false;
 
 var starting_pos;
-var n_tree= 70;
-var space = 10;
+var n_tree= 100;
+var space = 20;
 var plane_lenght = n_tree * space;
 
 function treelvl(){
@@ -551,20 +563,20 @@ function treelvl(){
 
             newT.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI
         
-            BB_log = new THREE.Box3().setFromObject(newT.children[0]).expandByScalar(1.5);  //TODO respect the model
-
-            collidableTreeBoxes.push(BB_log);
-        
-            BB_crown = new THREE.Box3().setFromObject(newT.children[1]).expandByScalar(1);
-
-            collidableTreeBoxes.push(BB_crown);
+           
             
             
             if(i%10==0){
-            createRock(newT.position.x ,-1,newT.position.z);
-            createRock((newT.position.x + 25.0) % 40 ,-1,newT.position.z);}
-            else
-            scene.add(newT);
+                createRock(newT.position.x ,-1,newT.position.z);
+                createRock((newT.position.x + 25.0) % 40 ,-1,newT.position.z);
+            }
+            else{
+                BB_log = new THREE.Box3().setFromObject(newT.children[0]).expandByScalar(1.5);  //TODO respect the model
+                collidableTreeBoxes.push(BB_log);
+                BB_crown = new THREE.Box3().setFromObject(newT.children[1]).expandByScalar(1);   
+                collidableTreeBoxes.push(BB_crown);
+                scene.add(newT);
+            }
         }
 
         flag_p = true;
@@ -580,7 +592,6 @@ function treelvl(){
 }
 
 function wait1(count){
-    window.alert("wait");
     if(count == 1)return true;
     return false;
 }
@@ -618,9 +629,10 @@ function lifewell(x,y,z){
     return true;
 }
 
-function lifeplace(){
+function lifeplace(count){
+    if(count==1){
     z= mesh.position.z - 300;
-    
+
     statue = window.statue.clone();
     statue.position.x = 20;
     statue.position.z = z ;
@@ -645,21 +657,40 @@ function lifeplace(){
     createRock(-10,-1,z-5);
 
     lifewell(  0, 20, z );
-
-
-
-    return true;
-    
-
+    }
+    if(count==3)return true;
+    else return false;
 }
 
+function changeLight(count){
+    if(background_color == 0x11110F)background_color = 0x8FFFFF;
+    else background_color = 0x11110F;
+    
+    scene.background = new THREE.Color( background_color );
+    scene.fog = new THREE.Fog( background_color, 200, 300 );
+
+    if(light.intensity==0.1)light.intensity=1.25;
+    else light.intensity = 0.1;
+
+    return true;
+}
+
+function start(count){
+
+    if(count ==1){
+        
+        return true;
+    }
+}
 
 var fun_count = 0;
 var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [MovingRandRing, lifeplace , treelvl, MovingRandRing , treelvl ,  treelvl, wait1 ]; ///TODO SWITCH F
+    mode = [  MovingRandRing , treelvl , lifeplace, changeLight , MovingRandRing , treelvl ]; ///TODO SWITCH F
+
+   
 
     ret_end = (mode[mode_idx])(fun_count);
 
@@ -668,7 +699,7 @@ function createObs(){
          fun_count = 0;
          
     }
-
+    if(mode_idx >= mode.length) mode_idx = 0;  //TODO if endless reset else do end
     fun_count += 1;
 
 
@@ -680,7 +711,7 @@ function remove1life(){
 }
 
 function gain1life(){
-    if(lifes==maxlifes)return;
+    if(lifes==maxlifes){score += 1000; return;}
     sprite_ico_array[lifes].material.color.r=1.0;
     lifes+=1;
 }
