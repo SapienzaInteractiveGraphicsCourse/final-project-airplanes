@@ -13,7 +13,7 @@ var angleX = 0.0;
 var dx = 0.0;
 var dz = 0.0;
 
-var baseAngleY = -Math.PI;
+var baseAngleY = Math.PI;
 var baseangleX = 0;
 
 
@@ -82,6 +82,15 @@ var spotLight;
 var rock;
 var boxRock;
 
+//PLANES
+var bigp = 1;
+var normalp = 2;
+var smallp = 3;
+
+var choosen_plane = 1; //TODO menu di scelta
+
+
+
 var reallog = new THREE.Object3D();
 
 function loadModels(){
@@ -101,7 +110,12 @@ function loadModels(){
              gltf.scene.rotation.y = baseAngleY;
              gltf.scene.scale.set(0.75, 1, 1); 
 
-             mesh=gltf.scene ;
+             if(choosen_plane == normalp){
+                mesh=gltf.scene ;
+                lifes=3;
+                maxlifes=3;
+             }
+
              scene.add( gltf.scene );
              gltf.scene; // THREE.Group
              gltf.scenes; // Array<THREE.Group>
@@ -225,10 +239,56 @@ function loadModels(){
         // called when the resource is loaded
         function ( gltf ) {
             gltf.scene.position.y = 0.0;
-            gltf.scene.position.x = 0.0;
-            gltf.scene.scale.set(0.3,0.3,0.3);
-            //gltf.scene.rotation.y = Math.PI;
-            mesh =  gltf.scene;
+            gltf.scene.position.x = -10.0;
+            gltf.scene.position.z = -200.0;
+            gltf.scene.scale.set(0.015,0.015,0.015);
+            gltf.scene.rotation.y = baseAngleY;
+            scene.add( gltf.scene);
+
+            if(choosen_plane == bigp){
+                lifes=5;
+                maxlifes=5;
+                mesh=gltf.scene;
+            }
+
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+
+            
+        },
+        // called while loading is progressing
+        function ( xhr ) {
+
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+        },
+        // called when loading has errors
+        function ( error ) {
+
+            console.log( "[MODEL LOADER] " + error );
+
+        }
+    );
+
+    loader.load(// resource URL
+        'models/paperPlane/scene.gltf',
+        // called when the resource is loaded
+        function ( gltf ) {
+            gltf.scene.position.y = 0.0;
+            gltf.scene.position.x = -5.0;
+            gltf.scene.position.z = -200.0;
+            gltf.scene.scale.set(0.6,0.4,0.4);
+            gltf.scene.rotation.y = baseAngleY;
+            scene.add( gltf.scene);
+
+            if(choosen_plane == smallp){
+                lifes=1;
+                maxlifes=1;
+                baseAngleY=0.0;
+                mesh=gltf.scene;
+            }
 
             gltf.scene; // THREE.Group
             gltf.scenes; // Array<THREE.Group>
@@ -253,6 +313,8 @@ function loadModels(){
 
 
 }
+
+
 
 function init() {
 
@@ -279,9 +341,6 @@ function init() {
 
     // create two geometry
 
-
-    
-
     const geometry = new THREE.BoxBufferGeometry( 10, 3, 5 );
 
     const material = new THREE.MeshStandardMaterial( { color: 0x800080 } );
@@ -289,8 +348,12 @@ function init() {
     mesh = new THREE.Mesh( geometry, material );
     mesh.rotation.y = -Math.PI/2;
 
+
+
     loadModels();
     
+    
+
     //-----// RING model //-----//
 
     const material2 = new THREE.MeshPhongMaterial ( { color: 0xdfdf03 } );
@@ -861,14 +924,14 @@ function godown(){
 function goright(){
     if(angleY < -Math.PI/12  ){
     angleY += Math.PI/100;
-    mesh.rotation.y = -angleY + Math.PI/2  ;
+    mesh.rotation.y = -angleY + Math.PI/2 + baseAngleY + Math.PI  ;
     }
 }
 
 function goleft(){
     if(angleY > -11*Math.PI/12  ){
     angleY -= Math.PI/100;
-    mesh.rotation.y = -angleY + Math.PI/2  ;
+    mesh.rotation.y = -angleY + Math.PI/2 + baseAngleY + Math.PI ;
     }
 }
 
