@@ -5,7 +5,7 @@ var scene;
 var mesh;
 var stop=false;
 
-var vel = 1.5;
+var vel = 0.1;
 var maxvel = 2.5;
 var minvel = -0.3;
 var angleY = -Math.PI/2;//0.0;  ///for V not orientation
@@ -87,7 +87,7 @@ var bigp = 1;
 var normalp = 2;
 var smallp = 3;
 
-var choosen_plane = 1; //TODO menu di scelta
+var choosen_plane = 3; //TODO menu di scelta
 
 
 
@@ -106,17 +106,18 @@ function loadModels(){
          function ( gltf ) {
              gltf.scene.position.y = 0.0;
              gltf.scene.position.x = 0.0;
-             gltf.scene.position.z =-100.0;
+             gltf.scene.position.z = 0.0;
              gltf.scene.rotation.y = baseAngleY;
              gltf.scene.scale.set(0.75, 1, 1); 
 
              if(choosen_plane == normalp){
+                scene.add(gltf.scene);
                 mesh=gltf.scene ;
                 lifes=3;
                 maxlifes=3;
              }
 
-             scene.add( gltf.scene );
+             //scene.add( gltf.scene );
              gltf.scene; // THREE.Group
              gltf.scenes; // Array<THREE.Group>
              gltf.cameras; // Array<THREE.Camera>
@@ -134,9 +135,10 @@ function loadModels(){
          }
      );
     }
-         // Load a glTF resource
-     
- 
+
+    //REALLOG
+     {
+    /*
      loader.load(// resource URL
          'models/log/scene.gltf',
          // called when the resource is loaded
@@ -164,6 +166,8 @@ function loadModels(){
              console.log( "[MODEL LOADER] " + error ); 
          }
      );
+        */
+       }
 
      loader.load(// resource URL
         'models/rocks/scene.gltf',
@@ -171,7 +175,7 @@ function loadModels(){
         function ( gltf ) {
             gltf.scene.position.y = 0.0;
             gltf.scene.position.x = 10.0;
-            gltf.scene.position.z =-300.0;
+            gltf.scene.position.z =0.0;
             gltf.scene.scale.set(0.02,0.04,0.02);
            
             scene.add( gltf.scene );
@@ -204,7 +208,7 @@ function loadModels(){
     );
 
     loader.load(// resource URL
-        'models/temple/scene.gltf',
+        'models/statue/scene.gltf',
         // called when the resource is loaded
         function ( gltf ) {
             gltf.scene.position.y = 0.0;
@@ -240,12 +244,13 @@ function loadModels(){
         function ( gltf ) {
             gltf.scene.position.y = 0.0;
             gltf.scene.position.x = -10.0;
-            gltf.scene.position.z = -200.0;
+            gltf.scene.position.z = 0.0;
             gltf.scene.scale.set(0.015,0.015,0.015);
             gltf.scene.rotation.y = baseAngleY;
-            scene.add( gltf.scene);
+            
 
             if(choosen_plane == bigp){
+                scene.add( gltf.scene);
                 lifes=5;
                 maxlifes=5;
                 mesh=gltf.scene;
@@ -276,14 +281,13 @@ function loadModels(){
         'models/paperPlane/scene.gltf',
         // called when the resource is loaded
         function ( gltf ) {
-            gltf.scene.position.y = 0.0;
+            gltf.scene.position.y = -10.0;
             gltf.scene.position.x = -5.0;
-            gltf.scene.position.z = -200.0;
+            gltf.scene.position.z = 0.0;
             gltf.scene.scale.set(0.6,0.4,0.4);
-            gltf.scene.rotation.y = baseAngleY;
-            scene.add( gltf.scene);
 
             if(choosen_plane == smallp){
+                scene.add( gltf.scene);
                 lifes=1;
                 maxlifes=1;
                 baseAngleY=0.0;
@@ -347,7 +351,7 @@ function init() {
 
     mesh = new THREE.Mesh( geometry, material );
     mesh.rotation.y = -Math.PI/2;
-
+    mesh.position.z=300;
 
 
     loadModels();
@@ -381,15 +385,36 @@ function init() {
 
     tree.add( log );
     
+    // TEST CON new THREE.SphereGeometry( 12, 4, 5 ,3 ,10 ,3 ,6)
     crown = new THREE.Mesh( new THREE.BoxBufferGeometry( 20, 15, 20 ), new THREE.MeshPhongMaterial({ map : greenpaintTXT }) ) ;
 
     crown.position.y=20.0;
 
     tree.add(crown);
 
-    tree.position.z = -150.0;
+    topcrown = new THREE.Mesh( new THREE.BoxBufferGeometry( 16, 3, 16 ), new THREE.MeshPhongMaterial({ map : greenpaintTXT }) ) ;
+
+    topcrown.position.y=9.0;
+
+    crown.add(topcrown);
+
+    smallLog = new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 10, 2 ), new THREE.MeshPhongMaterial ({ map : legnoTXT }) );
+    smallLog.position.y=10.0;
+    smallLog.position.x=-5.0;
+    smallLog.rotation.z=Math.PI/4;
+    tree.add(smallLog);
+
+    smallLog = new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 10, 2 ), new THREE.MeshPhongMaterial ({ map : legnoTXT }) );
+    smallLog.position.y=10.0;
+    smallLog.position.x=5.0;
+    smallLog.rotation.z=-Math.PI/4;
+    tree.add(smallLog);
+
+    tree.position.z = -500.0;
     tree.position.y = 10.0;
     tree.position.x = 35.0;
+
+    scene.add(tree);    
 
     tree.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI
 
@@ -414,7 +439,19 @@ function init() {
     scene.add( mesh );
 
 
-    //-----//    //-----//
+    //-----//  bird  //-----//
+
+    test = new THREE.Mesh( new THREE.BoxBufferGeometry( 7, 30, 7 ), new THREE.MeshPhongMaterial ({ map : legnoTXT }) );
+    test.position.z = -200;
+    scene.add(test);
+    setInterval(() => {
+        if(test.position.x > mesh.position.x +1 ){
+            test.position.x -= 0.2 ; 
+        }else if(test.position.x < mesh.position.x  - 1){
+            test.position.x += 0.2 ; 
+        }
+       
+    }, 50);
 
 
 
@@ -693,7 +730,7 @@ function lifewell(x,y,z){
 }
 
 function lifeplace(count){
-    if(count==1){
+    if(count==0){
     z= mesh.position.z - 300;
 
     statue = window.statue.clone();
@@ -721,7 +758,7 @@ function lifeplace(count){
 
     lifewell(  0, 20, z );
     }
-    if(count==3)return true;
+    if(count==2)return true;
     else return false;
 }
 
@@ -751,7 +788,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [  MovingRandRing , treelvl , lifeplace, changeLight , MovingRandRing , treelvl ]; ///TODO SWITCH F
+    mode = [  lifeplace , treelvl , lifeplace, changeLight , MovingRandRing , treelvl ]; ///TODO SWITCH F
 
    
 
@@ -803,15 +840,15 @@ function CheckCollisions(){
 
         mesh.visible = false;
         
-        window.setTimeout(function(){ mesh.visible = true; sprite_ico_array[lifes].material.color.r=1.0; },500);
+        window.setTimeout(function(){ mesh.visible = true; sprite_ico_array[lifes].material.color.r=1.0; },300);
         
-        window.setTimeout(function(){ mesh.visible = false; sprite_ico_array[lifes].material.color.r=0.0; },1000);
+        window.setTimeout(function(){ mesh.visible = false; sprite_ico_array[lifes].material.color.r=0.0; },600);
 
-        window.setTimeout(function(){ mesh.visible = true; sprite_ico_array[lifes].material.color.r=1.0; },1500);
+        window.setTimeout(function(){ mesh.visible = true; sprite_ico_array[lifes].material.color.r=1.0; },900);
         
-        window.setTimeout(function(){  mesh.visible = false; sprite_ico_array[lifes].material.color.r=0.0; },2000);
+        window.setTimeout(function(){  mesh.visible = false; sprite_ico_array[lifes].material.color.r=0.0; },1200);
 
-        window.setTimeout(function(){  mesh.visible = true;  flagColl=false; },3000);
+        window.setTimeout(function(){  mesh.visible = true;  flagColl=false; },1800);
         }
     
     ring_coll = false;
