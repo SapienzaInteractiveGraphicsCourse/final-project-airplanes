@@ -5,7 +5,7 @@ var scene;
 var mesh;
 var stop=false;
 
-var vel = 0.5;
+var vel = 1.5;
 var maxvel = 2.5;
 var minvel = -0.3;
 var angleY = -Math.PI/2;//0.0;  ///for V not orientation
@@ -80,6 +80,8 @@ var spotLight;
 var rock;
 var boxRock;
 
+var reallog = new THREE.Object3D();
+
 function loadModels(){
 
     //TEST LOAD MODELLO
@@ -95,7 +97,8 @@ function loadModels(){
              gltf.scene.position.x = 0.0;
              gltf.scene.position.z =-100.0;
              gltf.scene.rotation.y = baseAngleY;
-             
+             gltf.scene.scale.set(0.75, 1, 1); 
+
              mesh=gltf.scene ;
              scene.add( gltf.scene );
              gltf.scene; // THREE.Group
@@ -110,9 +113,7 @@ function loadModels(){
  
          },
          // called when loading has errors
-         function ( error ) {
- 
-             console.log( "[MODEL LOADER] " + error );
+         function ( error ) {  console.log( "[MODEL LOADER] " + error );
  
          }
      );
@@ -131,26 +132,20 @@ function loadModels(){
              gltf.scene.rotation.z = -Math.PI/2;
              gltf.scene.rotation.y = Math.PI/2;
              gltf.scene.scale.set(0.015,0.02,0.02);  //Y X Z
-             
-            
+             reallog = gltf.scene ;
              gltf.scene; // THREE.Group
              gltf.scenes; // Array<THREE.Group>
              gltf.cameras; // Array<THREE.Camera>
              gltf.asset; // Object
  
-             
          },
          // called while loading is progressing
          function ( xhr ) {
- 
              console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
- 
          },
          // called when loading has errors
          function ( error ) {
- 
-             console.log( "[MODEL LOADER] " + error );
- 
+             console.log( "[MODEL LOADER] " + error ); 
          }
      );
 
@@ -165,7 +160,7 @@ function loadModels(){
            
             scene.add( gltf.scene );
 
-            rock=gltf.scene;
+            window.rock=gltf.scene;
 
             boxRock = new THREE.Box3().setFromObject(rock);
 
@@ -192,6 +187,38 @@ function loadModels(){
         }
     );
 
+    loader.load(// resource URL
+        'models/temple/scene.gltf',
+        // called when the resource is loaded
+        function ( gltf ) {
+            gltf.scene.position.y = 0.0;
+            gltf.scene.position.x = 0.0;
+            gltf.scene.scale.set(0.3,0.3,0.3);
+            //gltf.scene.rotation.y = Math.PI;
+            window.statue =  gltf.scene;
+
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+
+            
+        },
+        // called while loading is progressing
+        function ( xhr ) {
+
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+        },
+        // called when loading has errors
+        function ( error ) {
+
+            console.log( "[MODEL LOADER] " + error );
+
+        }
+    );
+
+
 }
 
 function init() {
@@ -206,7 +233,7 @@ function init() {
     //perspective cam
     const fov = 35; 
     const aspect = container.clientWidth / container.clientHeight;
-    const near = 0.5;
+    const near = 20;
     const far = 1000;
 
     camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
@@ -228,6 +255,8 @@ function init() {
 
     mesh = new THREE.Mesh( geometry, material );
     mesh.rotation.y = -Math.PI/2;
+
+    loadModels();
     
     //-----// RING model //-----//
 
@@ -254,7 +283,7 @@ function init() {
 
     log = new THREE.Mesh( new THREE.BoxBufferGeometry( 7, 30, 7 ), new THREE.MeshPhongMaterial ({ map : legnoTXT }) );
 
-    tree.add(log);
+    tree.add( log );
     
     crown = new THREE.Mesh( new THREE.BoxBufferGeometry( 20, 15, 20 ), new THREE.MeshPhongMaterial({ map : greenpaintTXT }) ) ;
 
@@ -333,7 +362,7 @@ function init() {
     if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 200, 300 );
 
 
-    loadModels();
+ 
     
    
 
@@ -361,7 +390,7 @@ function init() {
         spotLight.shadow.camera.far = -200;
     
         scene.add( spotLight );
-      
+
 }
 
 
@@ -432,10 +461,25 @@ var rings = {};
 var dxr= 0.0;
 var dyr= 0.0;
 
-function MovingRandRing(count){   //TODO True quando finisce
- 
+var new_rock;
+
+function createRock(x,y,z){
+    new_rock = window.rock.clone();
+    new_rock.position.x = x;
+    new_rock.position.y = y;
+    new_rock.position.z = z;
+    scene.add(new_rock);
+    new_rock.updateMatrixWorld();  
+    boxRock = new THREE.Box3().setFromObject(new_rock);
+    collidableTreeBoxes.push(boxRock);
+}
+
+function MovingRandRing(count){  
+    
     if(count==0)collidableRingAndBoxes=[];
     if(count == n_ring_randring)return true;
+
+    createRock(-1,0,-200);
 
     rings[count]= ring_s.clone();
 
@@ -476,7 +520,7 @@ var flag_p = false;
 var flag_endlvl = false;
 
 var starting_pos;
-var n_tree= 100;
+var n_tree= 70;
 var space = 10;
 var plane_lenght = n_tree * space;
 
@@ -515,9 +559,12 @@ function treelvl(){
 
             collidableTreeBoxes.push(BB_crown);
             
-            scene.add(newT);
-
             
+            if(i%10==0){
+            createRock(newT.position.x ,-1,newT.position.z);
+            createRock((newT.position.x + 25.0) % 40 ,-1,newT.position.z);}
+            else
+            scene.add(newT);
         }
 
         flag_p = true;
@@ -543,14 +590,24 @@ function end(){
     fun_count=0;
 }
 
-function lifewell(){
+var interval;
+
+function lifewell(x,y,z){
 
     new_r = new THREE.Mesh( new THREE.BoxBufferGeometry( 10, 10, 10 ),  new THREE.MeshStandardMaterial( { map: spriteMap } ) );
-    new_r.position.z = mesh.position.z;
-    new_r.position.x = 5.0;
-    new_r.position.y = 10.0;
-    new_r.position.z -= 200.0;
+    new_r.position.x = x;
+    new_r.position.y = y;
+    new_r.position.z = z;
     new_r.rotation.z = Math.PI;
+
+    var interval = setInterval(() => {
+        new_r.rotation.y += Math.PI/32;
+    }, 50);
+    setTimeout(() => {
+        clearInterval(interval);
+    }, 10000);
+
+    new_r.updateMatrixWorld();
 
     box = new THREE.Box3().setFromObject(new_r);
 
@@ -561,13 +618,48 @@ function lifewell(){
     return true;
 }
 
+function lifeplace(){
+    z= mesh.position.z - 300;
+    
+    statue = window.statue.clone();
+    statue.position.x = 20;
+    statue.position.z = z ;
+    statue.rotation.y = -Math.PI/12;
+    scene.add(statue);
+
+    boxStatue = new THREE.Box3().setFromObject( statue );
+    collidableTreeBoxes.push(boxStatue);
+
+    statue = window.statue.clone();
+    statue.position.x = -20;
+    statue.position.z = z ;
+    statue.rotation.y = Math.PI/12;
+    scene.add(statue);
+
+    boxStatue = new THREE.Box3().setFromObject( statue );
+    collidableTreeBoxes.push(boxStatue);
+    
+    createRock(30,-1,z+10);
+    createRock(-30,-1,z+10);
+    createRock(10,-1,z-5);
+    createRock(-10,-1,z-5);
+
+    lifewell(  0, 20, z );
+
+
+
+    return true;
+    
+
+}
+
 
 var fun_count = 0;
 var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [treelvl,MovingRandRing, treelvl, MovingRandRing , MovingRandRing , wait1,  treelvl, wait1,  MovingRandRing, treelvl ]; ///TODO SWITCH F
+    mode = [MovingRandRing, lifeplace , treelvl, MovingRandRing , treelvl ,  treelvl, wait1 ]; ///TODO SWITCH F
 
     ret_end = (mode[mode_idx])(fun_count);
 
@@ -648,9 +740,9 @@ function CheckCollisions(){
     for (i=0;i<lifeBoxes.length;i++){
         if(lifeBoxes[i][1].containsPoint(mesh.position) && life_flag_coll ){
             life_flag_coll = false; //no subsequent life coll
-             gain1life();
-             scene.remove(lifeBoxes[i][0]);
-             window.setTimeout(function(){ life_flag_coll=false; },3000);
+            gain1life();
+            scene.remove(lifeBoxes[i][0]);
+            window.setTimeout(function(){ life_flag_coll=true; },200);
         }
     }
 }
@@ -683,7 +775,7 @@ function animate() {
   //score
   loop+=1;
   if(loop % 10 == 0)  score +=0;
-  //document.getElementById("info").innerHTML =score;
+  document.getElementById("info").innerHTML =score;
 }
 
 // set everything up
