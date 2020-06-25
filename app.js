@@ -5,7 +5,7 @@ var scene;
 var mesh;
 var stop=false;
 
-var vel = 0.1;
+var vel = 2.5;
 var maxvel = 2.5;
 var minvel = -0.3;
 var angleY = -Math.PI/2;//0.0;  ///for V not orientation
@@ -36,6 +36,12 @@ var grassTXT = new THREE.TextureLoader().load( 'textures/poligrass.jpg' );
 grassTXT.wrapS = THREE.RepeatWrapping; 
 grassTXT.wrapT = THREE.RepeatWrapping;
 grassTXT.repeat.set( 1, 200 );
+var giraffeTXT = new THREE.TextureLoader().load( 'textures/giraffeTXT.jpg' );
+giraffeTXT.wrapS = THREE.RepeatWrapping; 
+giraffeTXT.wrapT = THREE.RepeatWrapping;
+giraffeTXT.repeat.set( 1, 1 );
+
+
 Planematerial = new THREE.MeshPhongMaterial({ map : grassTXT , side: THREE.DoubleSide});
 plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, 20000, 100 ), Planematerial);
 plane.rotation.x = Math.PI/2;
@@ -81,6 +87,8 @@ var spotLight;
 //MODEL
 var rock;
 var boxRock;
+
+var torso;
 
 //PLANES
 var bigp = 1;
@@ -353,7 +361,6 @@ function init() {
     mesh.rotation.y = -Math.PI/2;
     mesh.position.z=300;
 
-
     loadModels();
     
     
@@ -374,7 +381,7 @@ function init() {
 
     ring_s.add( ring1 );
     ring_s.add( sphere1 );
-    scene.add( ring_s );
+    //scene.add( ring_s );
 
 
     //-----// TREE model //-----//
@@ -439,20 +446,113 @@ function init() {
     scene.add( mesh );
 
 
-    //-----//  bird  //-----//
+    //-----//  giraffe  //-----//
 
-    test = new THREE.Mesh( new THREE.BoxBufferGeometry( 7, 30, 7 ), new THREE.MeshPhongMaterial ({ map : legnoTXT }) );
-    test.position.z = -200;
-    scene.add(test);
-    setInterval(() => {
-        if(test.position.x > mesh.position.x +1 ){
-            test.position.x -= 0.2 ; 
-        }else if(test.position.x < mesh.position.x  - 1){
-            test.position.x += 0.2 ; 
-        }
-       
-    }, 50);
+    torso = new THREE.Mesh( new THREE.BoxBufferGeometry( 9, 8, 25 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
 
+    torso.position.z = -150;
+    torso.position.y = 15;
+
+    left_upper_arm = new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 8, 2 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
+    left_upper_arm.position.x += 5;
+    left_upper_arm.position.y -=3;
+    left_upper_arm.position.z +=9;
+
+    torso.add(left_upper_arm);
+
+    left_lower_arm = new THREE.Mesh( new THREE.BoxBufferGeometry( 1.5, 6.2, 1.5 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
+
+    left_lower_arm.position.y -=6;
+    left_upper_arm.add(left_lower_arm);
+
+    left_lower_arm_paw = new THREE.Mesh( new THREE.CylinderGeometry( 1.2, 1.5 ,2 ,4 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    //left_lower_arm_paw.position.z +=1;
+    left_lower_arm_paw.rotation.y = Math.PI/4;
+    left_lower_arm_paw.position.y -=4;
+    left_lower_arm.add(left_lower_arm_paw);
+
+    right_upper_arm = left_upper_arm.clone();
+    right_upper_arm.position.x -=10;
+    torso.add(right_upper_arm);
+
+    left_upper_leg= left_upper_arm.clone();
+    left_upper_leg.position.z -=18;
+    torso.add(left_upper_leg);
+
+    right_upper_leg = left_upper_leg.clone();
+    right_upper_leg.position.x -=10;
+    torso.add(right_upper_leg);
+
+    lower_neck =  new THREE.Mesh( new THREE.CylinderGeometry( 4, 5, 8 ,4 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    lower_neck.rotation.y = Math.PI/4;
+    //lower_neck.rotation.x = Math.PI/32;
+    lower_neck.position.y += 6;
+    lower_neck.position.z += 8;
+    torso.add(lower_neck);
+
+    upper_neck = new THREE.Mesh( new THREE.BoxBufferGeometry( 4 , 13, 5 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
+    upper_neck.rotation.y = -Math.PI/4;
+    upper_neck.position.y +=10;
+    lower_neck.add(upper_neck);
+
+    head = new THREE.Mesh( new THREE.CylinderGeometry( 2.5,  3, 4, 4 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
+    head.scale.z = 1.4 ;
+    head.scale.x = 1.4 ;
+    //head.rotation.x = -Math.PI/42;
+    head.rotation.y = Math.PI/4;
+    
+    head.position.y +=8;
+    head.position.z +=0.5;
+    upper_neck.add(head);
+
+    front_head = head.clone();
+    front_head.scale.x = 0.8;
+    front_head.scale.y = 0.6;
+    front_head.scale.z = 0.8;
+    front_head.position.y -= 1.0;
+    front_head.position.z += 4;
+    upper_neck.add(front_head);
+
+    //G_neck_Box = new THREE.Box3().setFromObject(upper_neck); 
+
+    left_horn = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.5, 0.5, 3 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    left_horn.position.y += 2.5;
+    left_horn.position.z += -0.8;
+    left_horn.position.x += 1.7;
+    left_horn.rotation.z += Math.PI/4;
+    left_horn.rotation.x += Math.PI/2;
+
+    head.add(left_horn);
+
+    right_horn = left_horn.clone();
+    right_horn.position.z += -1.2;
+    right_horn.position.x -= 1.2;
+    head.add(right_horn);
+
+
+    tail = new THREE.Mesh( new THREE.BoxBufferGeometry(1,5, 1 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    tail.position.x += 0;
+    tail.position.y -= 2;
+    tail.position.z -= 13;
+    tail.rotation.x = Math.PI/8;
+    torso.add(tail);
+
+    //torso.rotation.y = Math.PI/2;
+
+    //scene.add(torso);
+
+    
+    
+
+
+
+
+
+
+
+
+
+    
 
 
 
@@ -492,7 +592,7 @@ function init() {
 
 
     //FOG
-    if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 200, 300 );
+    if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 200, 350 );
 
 
  
@@ -525,6 +625,8 @@ function init() {
         scene.add( spotLight );
 
 }
+
+
 
 
 
@@ -598,7 +700,7 @@ function MovingRandRing(count){
     new_rs= rings[count];
     new_rs.name = count;
     new_rs.position.z = mesh.position.z;
-    new_rs.position.z -= 250.0;
+    new_rs.position.z -= 300.0;
     new_rs.position.x += (Math.random()-0.5)*50;
     new_rs.position.y = (Math.random()-0.4)*10;
 
@@ -730,8 +832,11 @@ function lifewell(x,y,z){
 }
 
 function lifeplace(count){
-    if(count==0){
-    z= mesh.position.z - 300;
+    if(count==1){
+    
+    z= mesh.position.z - 400;
+
+    create_giraffe(z + 100);
 
     statue = window.statue.clone();
     statue.position.x = 20;
@@ -772,6 +877,7 @@ function changeLight(count){
     if(light.intensity==0.1)light.intensity=1.25;
     else light.intensity = 0.1;
 
+    score += 1000;
     return true;
 }
 
@@ -783,12 +889,52 @@ function start(count){
     }
 }
 
+
+function create_giraffe(z){
+    
+    new_giraffe = torso.clone();
+    new_giraffe.position.z = z;
+    scene.add(new_giraffe);
+
+    G_torso_Box = new THREE.Box3().setFromObject(new_giraffe); 
+    G_torso_Box.min.z += 15;
+    collidableTreeBoxes.push(G_torso_Box);
+
+    var beta = -Math.PI/40;
+
+    var interv = setInterval(() => {
+        if(new_giraffe.position.x > mesh.position.x + 1.3 ){
+            new_giraffe.rotation.y = - Math.PI/80;
+            new_giraffe.position.x -= 0.2 ; 
+        }else if(new_giraffe.position.x < mesh.position.x  - 1.3){
+            new_giraffe.rotation.y = Math.PI/80;
+            new_giraffe.position.x += 0.2 ; 
+        }else {
+            new_giraffe.rotation.y = 0;
+        }
+
+        if(new_giraffe.children[0].rotation.x > -Math.PI/12) beta = -beta;
+        if(new_giraffe.children[0].rotation.x < Math.PI/12) beta = -beta;
+
+        new_giraffe.children[0].rotation.x += beta;
+        new_giraffe.children[1].rotation.x -= beta;
+        new_giraffe.children[2].rotation.x += beta;
+        new_giraffe.children[3].rotation.x -= beta;
+        new_giraffe.position.z += 1.5 ; 
+
+        new_giraffe.updateMatrixWorld();
+        
+       if(new_giraffe.position.z > mesh.position.z - 10 )clearInterval(interv);
+    }, 50);
+
+}
+
 var fun_count = 0;
 var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [  lifeplace , treelvl , lifeplace, changeLight , MovingRandRing , treelvl ]; ///TODO SWITCH F
+    mode = [ lifeplace, MovingRandRing , treelvl ,wait1, lifeplace ,wait1, changeLight ]; ///TODO SWITCH F
 
    
 
