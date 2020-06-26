@@ -5,7 +5,7 @@ var scene;
 var mesh;
 var stop=false;
 
-var vel = 3.5;
+var vel = 0.0;
 var maxvel = 2.5;
 var minvel = -0.3;
 var angleY = -Math.PI/2;//0.0;  ///for V not orientation
@@ -890,6 +890,7 @@ function changeLight(count){
     else background_color = 0x11110F;
     
     scene.background = new THREE.Color( background_color );
+    if(fog_flag)
     scene.fog = new THREE.Fog( background_color, 200, 300 );
 
     if(light.intensity==0.1)light.intensity=1.25;
@@ -1083,13 +1084,16 @@ function animate() {
 }
 
 function start(){
-
-    document.body.style.cursor = 'none';
-    document.getElementById("menu").style.visibility="hidden";
-
+    document.getElementById("info").style.display="block";
+    //document.body.style.cursor = 'none';
+    document.getElementById("menu").style.display="none";
     init();
     // render the scene
     animate();
+
+    setTimeout(() => {
+        vel=1.0;
+    }, 1000);
     
 }
 

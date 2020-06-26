@@ -15,28 +15,49 @@
     <script  src="three/GLTFLoader.js"></script>
 
     <script src="app.js"></script>
-    
-    
+    <script src="menuJS.js"></script>
+
+  <script> 
+  </script>
+
   </head>
 
 
   <body>
-    <a id="info">0</a>
-    <div id="scene-container"></div>
+    <a id="info" style="display:none;">0</a>
+    
 
+    
+    
     <div id="menu">
+      <div id="title"><p>PLANERUN</p></div>
+      <div class="button_menu" id ="play" onclick="start();"><p>PLAY</p></div>
+      <br>
+      <div class="button_menu" id ="options" onclick="show_options();"><p>OPTIONS</p></div>
+      <br>
+      <div class="button_menu" id ="credits" onclick="credits();"><p>CREDITS</p></div>
+   </div>
 
-      <div id="diff" onclick="diff1();"><p>1</p></div>
-      <div id="diff" onclick="diff2();"><p>2</p></div>
-      <div id="diff" onclick="diff3();"><p>3</p></div>
-
-      <div id="play" onclick="start();"><p>PLAY</p></div>
-
-      <a>asasfaws</a>
-
+    <div id="opt_menu" style="display:none">  
+          
+      <div id="text_opt" style="display:inline-block">difficulty :</div>
+      <div class="button_opt" id ="1" onclick="setEasy();" style="display:inline-block"><p>easy</p></div>
+      <div class="button_opt" id ="2" onclick="setMedium();"style="display:inline-block"><p>medium</p></div>
+      <div class="button_opt" id ="3" onclick="setHard();"style="display:inline-block"><p>hard</p></div>
+      <br>
+      <div id="text_opt" style="display:inline-block">Use FOG: </p></div>
+      <div class="button_opt" id ="yes_fog" onclick="back();"style="display:inline-block "><p>Y</p></div>
+      <div class="button_opt" id ="no_fog" onclick="setEasy();" style="display:inline-block"><p>N</p></div>
+      <br>
+      <div id="text_opt" style="display:inline-block">no collison mode</p></div>
+      <div class="button_opt" id ="yes_fog" onclick="back();"style="display:inline-block "><p>Y</p></div>
+      <div class="button_opt" id ="no_fog" onclick="setEasy();" style="display:inline-block"><p>N</p></div>
+      <br>
+      <br>
+      <div class="button_opt" id ="no_fog" onclick="back();" style="display:inline-block; "><p>BACK</p></div>
     </div>
 
-
+    <div id="scene-container"></div>
 
   </body>
 </html>
