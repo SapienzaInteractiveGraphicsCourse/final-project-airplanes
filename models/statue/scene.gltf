@@ -3,74 +3,74 @@
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 731,
+      "count": 491,
       "max": [
-        0.18471643328666687,
-        0.99707114696502686,
-        0.29973199963569641
+        0.49927499890327454,
+        0.74842101335525513,
+        1
       ],
       "min": [
-        -0.22923168540000916,
-        -0.0071871355175971985,
-        -0.27249437570571899
+        -0.49927499890327454,
+        -0.74842101335525513,
+        -1
       ],
       "type": "VEC3"
     },
     {
       "bufferView": 2,
-      "byteOffset": 8772,
+      "byteOffset": 5892,
       "componentType": 5126,
-      "count": 731,
+      "count": 491,
       "max": [
-        0.99925613403320312,
-        0.98861163854598999,
-        0.99940109252929688
+        0.99946999549865723,
+        0.99999499320983887,
+        0.99904054403305054
       ],
       "min": [
-        -0.99769049882888794,
-        -0.92457616329193115,
-        -0.99909508228302002
+        -0.99946999549865723,
+        -0.99999845027923584,
+        -0.99999773502349854
       ],
       "type": "VEC3"
     },
     {
       "bufferView": 3,
       "componentType": 5126,
-      "count": 731,
+      "count": 491,
       "max": [
-        0.99962973594665527,
-        0.99998295307159424,
-        0.99983096122741699,
+        0.9880179762840271,
+        0.99955201148986816,
+        0.99708598852157593,
         1
       ],
       "min": [
-        -0.99958038330078125,
-        -0.99960386753082275,
-        -0.99907577037811279,
-        1
+        -1,
+        -0.99981200695037842,
+        -0.99970299005508423,
+        -1
       ],
       "type": "VEC4"
     },
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 731,
+      "count": 491,
       "max": [
-        0.99961090087890625,
-        0.98050606250762939
+        0.97030800580978394,
+        0.99414098262786865
       ],
       "min": [
-        0.00038911902811378241,
-        0.00038911902811378241
+        0.0058593801222741604,
+        0.0058593801222741604
       ],
       "type": "VEC2"
     },
     {
       "bufferView": 0,
       "componentType": 5125,
-      "count": 2988,
+      "count": 2082,
       "max": [
-        730
+        490
       ],
       "min": [
         0
@@ -80,42 +80,42 @@
   ],
   "asset": {
     "extras": {
-      "author": "Loïc Norgeot (https://sketchfab.com/norgeotloic)",
-      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
-      "source": "https://sketchfab.com/models/d52354d7837443fe84c5a800afc8cb82",
-      "title": "Ramesses III - 1024px textures, 1k tris"
+      "author": "Paulina (https://sketchfab.com/Byakko)",
+      "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+      "source": "https://sketchfab.com/3d-models/cougar-statue-bc6268a7916d48729f9afac0f1eb0cd9",
+      "title": "Cougar statue"
     },
-    "generator": "Sketchfab-3.22.13",
+    "generator": "Sketchfab-7.92.0",
     "version": "2.0"
   },
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 11952,
+      "byteLength": 8328,
       "byteOffset": 0,
       "name": "floatBufferViews",
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteLength": 5848,
-      "byteOffset": 11952,
+      "byteLength": 3928,
+      "byteOffset": 8328,
       "byteStride": 8,
       "name": "floatBufferViews",
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 17544,
-      "byteOffset": 17800,
+      "byteLength": 11784,
+      "byteOffset": 12256,
       "byteStride": 12,
       "name": "floatBufferViews",
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 11696,
-      "byteOffset": 35344,
+      "byteLength": 7856,
+      "byteOffset": 24040,
       "byteStride": 16,
       "name": "floatBufferViews",
       "target": 34962
@@ -123,30 +123,46 @@
   ],
   "buffers": [
     {
-      "byteLength": 47040,
+      "byteLength": 31896,
       "uri": "scene.bin"
     }
   ],
   "images": [
     {
-      "uri": "textures/Material.001_normal.jpg"
+      "uri": "textures/Statue_Cougar_MAT_baseColor.png"
     },
     {
-      "uri": "textures/Material.001_baseColor.jpg"
+      "uri": "textures/Statue_Cougar_MAT_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Statue_Cougar_MAT_emissive.jpeg"
+    },
+    {
+      "uri": "textures/Statue_Cougar_MAT_normal.jpeg"
     }
   ],
   "materials": [
     {
-      "doubleSided": false,
+      "alphaMode": "BLEND",
+      "doubleSided": true,
       "emissiveFactor": [
-        0,
-        0,
-        0
+        1,
+        1,
+        1
       ],
-      "name": "Material.001",
+      "emissiveTexture": {
+        "index": 2,
+        "texCoord": 0
+      },
+      "name": "Statue_Cougar_MAT",
       "normalTexture": {
-        "index": 0,
+        "index": 3,
         "scale": 1,
+        "texCoord": 0
+      },
+      "occlusionTexture": {
+        "index": 1,
+        "strength": 1,
         "texCoord": 0
       },
       "pbrMetallicRoughness": {
@@ -157,17 +173,21 @@
           1
         ],
         "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "metallicFactor": 1,
+        "metallicRoughnessTexture": {
           "index": 1,
           "texCoord": 0
         },
-        "metallicFactor": 0,
-        "roughnessFactor": 0.38905933589999997
+        "roughnessFactor": 1
       }
     }
   ],
   "meshes": [
     {
-      "name": "instantOut.001_Material.001_0",
+      "name": "defaultMaterial",
       "primitives": [
         {
           "attributes": {
@@ -212,53 +232,29 @@
         0,
         0,
         0,
+        -4.3711390063094768e-08,
+        0.999999999999999,
         0,
-        1,
         0,
-        0,
-        -1,
-        0,
+        -0.999999999999999,
+        -4.3711390063094768e-08,
         0,
         0,
         0,
         0,
         1
       ],
-      "name": "0c9b1282983448238191284f5efba7b4.fbx"
+      "name": "Collada visual scene group"
     },
     {
       "children": [
         4
       ],
-      "name": "RootNode"
-    },
-    {
-      "children": [
-        5
-      ],
-      "matrix": [
-        100,
-        0,
-        0,
-        0,
-        0,
-        99.999999999999901,
-        4.371138828673792e-06,
-        0,
-        0,
-        -4.371138828673792e-06,
-        99.999999999999901,
-        0,
-        0,
-        0,
-        0,
-        1
-      ],
-      "name": "instantOut.001"
+      "name": "Statue_Cougar_01_low"
     },
     {
       "mesh": 0,
-      "name": "instantOut.001_Material.001_0"
+      "name": "defaultMaterial"
     }
   ],
   "samplers": [
@@ -286,6 +282,14 @@
     {
       "sampler": 0,
       "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    },
+    {
+      "sampler": 0,
+      "source": 3
     }
   ]
 }

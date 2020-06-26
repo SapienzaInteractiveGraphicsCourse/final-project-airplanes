@@ -5,7 +5,7 @@ var scene;
 var mesh;
 var stop=false;
 
-var vel = 2.5;
+var vel = 3.5;
 var maxvel = 2.5;
 var minvel = -0.3;
 var angleY = -Math.PI/2;//0.0;  ///for V not orientation
@@ -37,9 +37,7 @@ grassTXT.wrapS = THREE.RepeatWrapping;
 grassTXT.wrapT = THREE.RepeatWrapping;
 grassTXT.repeat.set( 1, 200 );
 var giraffeTXT = new THREE.TextureLoader().load( 'textures/giraffeTXT.jpg' );
-giraffeTXT.wrapS = THREE.RepeatWrapping; 
-giraffeTXT.wrapT = THREE.RepeatWrapping;
-giraffeTXT.repeat.set( 1, 1 );
+var facefurTXT = new THREE.TextureLoader().load( 'textures/facefur.jpg' );
 
 
 Planematerial = new THREE.MeshPhongMaterial({ map : grassTXT , side: THREE.DoubleSide});
@@ -77,7 +75,7 @@ var spriteMap;
 
 // SCORE
 var score = 0;
-var loop = 0;
+var old_score = 0;
 
 //LIGHTS
 var light;
@@ -219,9 +217,9 @@ function loadModels(){
         'models/statue/scene.gltf',
         // called when the resource is loaded
         function ( gltf ) {
-            gltf.scene.position.y = 0.0;
+            gltf.scene.position.y = 10.0;
             gltf.scene.position.x = 0.0;
-            gltf.scene.scale.set(0.3,0.3,0.3);
+            gltf.scene.scale.set(14,18,14);
             //gltf.scene.rotation.y = Math.PI;
             window.statue =  gltf.scene;
 
@@ -341,7 +339,7 @@ function init() {
     const fov = 35; 
     const aspect = container.clientWidth / container.clientHeight;
     const near = 20;
-    const far = 1000;
+    const far = 500;
 
     camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
     //camera = new THREE.OrthographicCamera( 150, 150, 150, 150, -10, 150);  //OrthographicCamera( left , right , top , bottom , near , far  )
@@ -453,7 +451,7 @@ function init() {
     torso.position.z = -150;
     torso.position.y = 15;
 
-    left_upper_arm = new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 8, 2 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
+    left_upper_arm = new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 8, 4 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
     left_upper_arm.position.x += 5;
     left_upper_arm.position.y -=3;
     left_upper_arm.position.z +=9;
@@ -465,7 +463,7 @@ function init() {
     left_lower_arm.position.y -=6;
     left_upper_arm.add(left_lower_arm);
 
-    left_lower_arm_paw = new THREE.Mesh( new THREE.CylinderGeometry( 1.2, 1.5 ,2 ,4 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    left_lower_arm_paw = new THREE.Mesh( new THREE.CylinderGeometry( 1.2, 1.5 ,2 ,4 ), new THREE.MeshPhongMaterial ({ color: 0x302217 }) );
     //left_lower_arm_paw.position.z +=1;
     left_lower_arm_paw.rotation.y = Math.PI/4;
     left_lower_arm_paw.position.y -=4;
@@ -483,7 +481,7 @@ function init() {
     right_upper_leg.position.x -=10;
     torso.add(right_upper_leg);
 
-    lower_neck =  new THREE.Mesh( new THREE.CylinderGeometry( 4, 5, 8 ,4 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    lower_neck =  new THREE.Mesh( new THREE.CylinderGeometry( 4, 5, 8 ,4 ), new THREE.MeshPhongMaterial ({ map : giraffeTXT }) );
     lower_neck.rotation.y = Math.PI/4;
     //lower_neck.rotation.x = Math.PI/32;
     lower_neck.position.y += 6;
@@ -504,8 +502,9 @@ function init() {
     head.position.y +=8;
     head.position.z +=0.5;
     upper_neck.add(head);
-
+    
     front_head = head.clone();
+    front_head.material = new THREE.MeshPhongMaterial ({ map : facefurTXT });
     front_head.scale.x = 0.8;
     front_head.scale.y = 0.6;
     front_head.scale.z = 0.8;
@@ -515,10 +514,10 @@ function init() {
 
     //G_neck_Box = new THREE.Box3().setFromObject(upper_neck); 
 
-    left_horn = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.5, 0.5, 3 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    left_horn = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.5, 0.5, 2.7 ), new THREE.MeshPhongMaterial ({ color: 0x8A4117}) );
     left_horn.position.y += 2.5;
-    left_horn.position.z += -0.8;
-    left_horn.position.x += 1.7;
+    left_horn.position.z += -0.6;
+    left_horn.position.x += 1.9;
     left_horn.rotation.z += Math.PI/4;
     left_horn.rotation.x += Math.PI/2;
 
@@ -529,8 +528,21 @@ function init() {
     right_horn.position.x -= 1.2;
     head.add(right_horn);
 
+    left_eye = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.6, 0.8, 0.81 ), new THREE.MeshLambertMaterial ({ color: 0x111111  }) );
+    left_eye.position.y += 1.5;
+    left_eye.position.z += 2.1;
+    left_eye.position.x += -0.4;
+    left_eye.rotation.z += Math.PI/4;
+    left_eye.rotation.x += Math.PI/2;
+    head.add(left_eye);
 
-    tail = new THREE.Mesh( new THREE.BoxBufferGeometry(1,5, 1 ), new THREE.MeshPhongMaterial ({ map : greenpaintTXT }) );
+    right_eye = left_eye.clone();
+    right_eye.position.z += -1.4;
+    right_eye.position.x += -1.8;
+    head.add(right_eye);
+
+
+    tail = new THREE.Mesh( new THREE.BoxBufferGeometry(1,5, 1 ), new THREE.MeshPhongMaterial ({ color: 0x8A4117 }) );
     tail.position.x += 0;
     tail.position.y -= 2;
     tail.position.z -= 13;
@@ -592,7 +604,7 @@ function init() {
 
 
     //FOG
-    if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 200, 350 );
+    if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 300, 400 );
 
 
  
@@ -607,7 +619,7 @@ function init() {
     scene.add( light );
 
 
-    spotLight = new THREE.SpotLight( 0xaaaaaa, 1 );
+    spotLight = new THREE.SpotLight( 0x888855, 1 );
 
         spotLight.position.set( 0, -10, -300 );
         spotLight.angle = Math.PI / 10;
@@ -691,7 +703,12 @@ function createRock(x,y,z){
 function MovingRandRing(count){  
     
     if(count==0)collidableRingAndBoxes=[];
-    if(count == n_ring_randring){renderer.setAnimationLoop( function () {}); return true;}
+    if(count == n_ring_randring){renderer.setAnimationLoop( 
+                                    function (){});
+                                    setTimeout(() => {
+                                        collidableRingAndBoxes= []; 
+                                    }, 3000); 
+                                    return true;}
 
     //createRock(-1,0,-200);
 
@@ -700,7 +717,7 @@ function MovingRandRing(count){
     new_rs= rings[count];
     new_rs.name = count;
     new_rs.position.z = mesh.position.z;
-    new_rs.position.z -= 300.0;
+    new_rs.position.z -= 350.0;
     new_rs.position.x += (Math.random()-0.5)*50;
     new_rs.position.y = (Math.random()-0.4)*10;
 
@@ -709,6 +726,7 @@ function MovingRandRing(count){
     if(count>3) dxr = 1.2;
     if(count>7) dyr = 0.8;
     if(count>12) dyr += 0.5;
+    
     BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1); 
 
     new_rs.userData=BB_ring;
@@ -756,7 +774,7 @@ function treelvl(){
             
             newT = tree.clone();
             newT.position.z = mesh.position.z;
-            newT.position.z -= (300 + i *  space    );  
+            newT.position.z -= (400 + i *  space    );  
             newT.position.x = (Math.random()-0.5) * 95; 
 
             r=Math.random()/2 + 0.8; //tra 1 e 1.5
@@ -834,9 +852,9 @@ function lifewell(x,y,z){
 function lifeplace(count){
     if(count==1){
     
-    z= mesh.position.z - 400;
+    z= mesh.position.z - 500;
 
-    create_giraffe(z + 100);
+    create_giraffe(0,z + 75);
 
     statue = window.statue.clone();
     statue.position.x = 20;
@@ -863,7 +881,7 @@ function lifeplace(count){
 
     lifewell(  0, 20, z );
     }
-    if(count==2)return true;
+    if(count==3)return true;
     else return false;
 }
 
@@ -890,25 +908,32 @@ function start(count){
 }
 
 
-function create_giraffe(z){
+function create_giraffe(x,z){
     
     new_giraffe = torso.clone();
+    new_giraffe.position.x = x;
     new_giraffe.position.z = z;
     scene.add(new_giraffe);
 
     G_torso_Box = new THREE.Box3().setFromObject(new_giraffe); 
-    G_torso_Box.min.z += 15;
+    G_torso_Box.min.z += 10;
     collidableTreeBoxes.push(G_torso_Box);
 
     var beta = -Math.PI/40;
 
+    delta_x =  0.8;
+
+    delta_z = 1;
+
     var interv = setInterval(() => {
-        if(new_giraffe.position.x > mesh.position.x + 1.3 ){
+        if(new_giraffe.position.x > mesh.position.x + 1.8 ){
             new_giraffe.rotation.y = - Math.PI/80;
-            new_giraffe.position.x -= 0.2 ; 
-        }else if(new_giraffe.position.x < mesh.position.x  - 1.3){
+            new_giraffe.position.x -= delta_x; 
+            G_torso_Box.translate(new THREE.Vector3( -delta_x, 0, 0 ));
+        }else if(new_giraffe.position.x < mesh.position.x  - 1.8){
             new_giraffe.rotation.y = Math.PI/80;
-            new_giraffe.position.x += 0.2 ; 
+            new_giraffe.position.x += delta_x ; 
+            G_torso_Box.translate(new THREE.Vector3( delta_x, 0, 0 ));
         }else {
             new_giraffe.rotation.y = 0;
         }
@@ -920,9 +945,9 @@ function create_giraffe(z){
         new_giraffe.children[1].rotation.x -= beta;
         new_giraffe.children[2].rotation.x += beta;
         new_giraffe.children[3].rotation.x -= beta;
-        new_giraffe.position.z += 1.5 ; 
+        new_giraffe.position.z += delta_z ; 
 
-        new_giraffe.updateMatrixWorld();
+        G_torso_Box.translate(new THREE.Vector3( 0, 0, delta_z ));
         
        if(new_giraffe.position.z > mesh.position.z - 10 )clearInterval(interv);
     }, 50);
@@ -934,7 +959,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [ lifeplace, MovingRandRing , treelvl ,wait1, lifeplace ,wait1, changeLight ]; ///TODO SWITCH F
+    mode = [ lifeplace, treelvl,wait1,lifeplace, wait1, wait1 , changeLight ]; ///TODO SWITCH F
 
    
 
@@ -974,7 +999,7 @@ function CheckCollisions(){
     collision = collision || collidableTreeBoxes[i].containsPoint(mesh.position);
     }
   
-    if(collision) {
+    if(collision && !flagColl) {
 
         //window.alert("COLLIDE!");
 
@@ -1014,6 +1039,7 @@ function CheckCollisions(){
         if(last_coll != idx_col) {last_coll = idx_col; score+=10;}
     }
 
+    if(life_flag_coll)
     for (i=0;i<lifeBoxes.length;i++){
         if(lifeBoxes[i][1].containsPoint(mesh.position) && life_flag_coll ){
             life_flag_coll = false; //no subsequent life coll
@@ -1029,7 +1055,7 @@ var old_pos = 0.0;
 var obs_delay = 100.0;
 
 function animate() {
-    
+
   requestAnimationFrame( animate );
   
   moveMesh();  
@@ -1044,22 +1070,30 @@ function animate() {
   
   repositionCam();
   
-  if(!flagColl)
+  if(true)
   CheckCollisions();
     
   renderer.render( scene, camera );  //render scene + cam
 
   //score
-  loop+=1;
-  if(loop % 10 == 0)  score +=0;
+  if(old_score != score )  {
   document.getElementById("info").innerHTML =score;
+  old_score =score;
+  }
 }
 
-// set everything up
-init();
+function start(){
 
-// render the scene
-animate();
+    document.body.style.cursor = 'none';
+    document.getElementById("menu").style.visibility="hidden";
+
+    init();
+    // render the scene
+    animate();
+    
+}
+
+
 
 
 
