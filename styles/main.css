@@ -9,7 +9,7 @@ body {
 
 #info {
   position: absolute;
-  bottom: 100px ;
+  bottom: 50px ;
   color: white  ;
   font-size: 70px;
 	width: 30%;
@@ -26,29 +26,27 @@ body {
 }
 
 #title{
-  font-size:150px;
+  font-size:70px;
 }
 
 #menu{
   text-align:center;
-  border-top: 100px solid transparent;
-  font-size:100px;
   font-family:shadows into light;
 }
 
 #opt_menu{
-  border-top: 150px solid transparent;
-  border-left: 150px solid transparent;
+  border-top: 75px solid transparent;
+  border-left: 75px solid transparent;
   text-align:left;
-  font-size:100px;
+  font-size:50px;
   font-family:shadows into light;
 
 }
 
 #com_menu{
   text-align:center;
-  border-top: 100px solid transparent;
-  font-size:100px;
+  border-top: 50px solid transparent;
+  font-size:50px;
   font-family:shadows into light;
 }
 
@@ -56,8 +54,9 @@ body {
   border-radius:10%;
   text-align:center;
   background:#006680;
-  width:600px;
-  font-size:50px;
+  margin-top: 10px;
+  width:300px;
+  font-size:25px;
   font-family:shadows into light;
   cursor:pointer; 
   display: inline-block;
@@ -67,8 +66,8 @@ body {
   border-radius:10%;
   text-align:center;
   background:#006680;
-  width:600px;
-  font-size:50px;
+  width:300px;
+  font-size:27px;
   font-family:shadows into light;
   cursor:pointer; 
   display: inline-block;
@@ -88,17 +87,23 @@ body {
 
 
 #endScene{  
+  
+  height: 110vh;
+  width: 213vh;
   text-align:center;
-  font-size:150px;
+  font-size:100px;
+  background-repeat: round;
+
 }
 
 .button_end{
-  position: relative;
-  bottom: 0;
+  position: absolute;
+  top: 70%;
+  left:40%;
   border-radius:20%;
   background:#00ff22;
-  width:600px;
-  font-size:50px;
+  width:300px;
+  font-size:30px;
   font-family:shadows into light;
   cursor:pointer; 
   display: inline-block;

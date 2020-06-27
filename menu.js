@@ -97,11 +97,11 @@ function endgame(){
     document.getElementById("scene-container").style.display = "none";
     document.getElementById("endScene").style.display = "block";
     
-    document.body.style.backgroundPosition = "top";
-    document.body.style.backgroundRepeat = "no-repeat";
-    document.body.style.backgroundSize = "cover";
+
+    document.getElementById("endScene").style.height=1000;//  window.screen.height;
+    document.getElementById("endScene").style.width=   window.screen.width;
     
-    document.body.style.backgroundImage = "url('../textures/background.png')";
+    document.getElementById("endScene").style.backgroundImage = "url('../textures/background.png')";
 
     document.getElementById("info").style.display = "none";
     document.getElementById("endText").innerHTML = "Final score: " + document.getElementById("info").innerHTML;
