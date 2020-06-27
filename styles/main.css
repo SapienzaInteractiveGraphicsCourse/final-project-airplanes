@@ -87,10 +87,28 @@ body {
 }
 
 
-#endScene{
-  height: 100%; 
+#endScene{  
+  text-align:center;
+  font-size:150px;
 }
 
+.button_end{
+  position: relative;
+  bottom: 0;
+  border-radius:20%;
+  background:#00ff22;
+  width:600px;
+  font-size:50px;
+  font-family:shadows into light;
+  cursor:pointer; 
+  display: inline-block;
+}
+
+.button_end:hover{
+  background:#f10000;
+  color:white;
+  transform: scale(1.2, 1.2);
+}
 
 
 #test {

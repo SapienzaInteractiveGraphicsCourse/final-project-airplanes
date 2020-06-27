@@ -33,6 +33,11 @@ function show_options(){
   
 function setEasy(){
     choosen_plane = 1;
+    Diff_vel = 1.5;
+    maxvel = 2.0;
+    ring_score = 100;
+    light_score = 500;
+    life_score = 1000;
     document.getElementById("1").style.background = "#f52b2b";
     document.getElementById("2").style.background = "#006680";
     document.getElementById("3").style.background = "#006680";
@@ -40,6 +45,11 @@ function setEasy(){
 
 function setMedium(){
     choosen_plane = 2;
+    Diff_vel = 2.0;
+    maxvel = 2.5;
+    ring_score = 150;
+    light_score = 800;
+    life_score = 1500;
     document.getElementById("1").style.background = "#006680";
     document.getElementById("2").style.background = "#f52b2b";
     document.getElementById("3").style.background = "#006680";
@@ -47,6 +57,11 @@ function setMedium(){
 
 function setHard(){
     choosen_plane = 3;
+    Diff_vel = 2.5;
+    maxvel = 3.5;
+    ring_score = 200;
+    light_score = 1200;
+    life_score = 1500;
     document.getElementById("1").style.background = "#006680";
     document.getElementById("2").style.background = "#006680";
     document.getElementById("3").style.background = "#f52b2b";
@@ -82,9 +97,16 @@ function endgame(){
     document.getElementById("scene-container").style.display = "none";
     document.getElementById("endScene").style.display = "block";
     
-  document.body.style.backgroundPosition = "top";
-  document.body.style.backgroundRepeat = "no-repeat";
-  document.body.style.backgroundSize = "cover";
-  
-  document.body.style.backgroundImage = "url('../textures/background.png')";
+    document.body.style.backgroundPosition = "top";
+    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundSize = "cover";
+    
+    document.body.style.backgroundImage = "url('../textures/background.png')";
+
+    document.getElementById("info").style.display = "none";
+    document.getElementById("endText").innerHTML = "Final score: " + document.getElementById("info").innerHTML;
+}
+
+function restart(){
+    location.reload();
 }

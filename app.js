@@ -8,6 +8,7 @@ var stop=false;
 var vel = 0.0;
 var maxvel = 2.5;
 var minvel = -0.3;
+var Diff_vel = 2.0;  //2nd plane
 var angleY = -Math.PI/2;//0.0;  ///for V not orientation
 var angleX = 0.0;
 var dx = 0.0;
@@ -77,6 +78,9 @@ var spriteMap;
 // SCORE
 var score = 0;
 var old_score = 0;
+ring_score = 150;
+light_score = 800;
+life_score = 1500;
 
 //LIGHTS
 var light;
@@ -701,8 +705,8 @@ function createRock(x,y,z){
     collidableTreeBoxes.push(boxRock);
 }
 
+
 function MovingRandRing(count){  
-    
     if(count==0)collidableRingAndBoxes=[];
     if(count == n_ring_randring){renderer.setAnimationLoop( 
                                     function (){});
@@ -730,7 +734,6 @@ function MovingRandRing(count){
     
     BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1); 
 
-    new_rs.userData=BB_ring;
 
     renderer.setAnimationLoop( function () {
         if(rings[count].position.x > 30.0) dxr= -dxr;
@@ -746,6 +749,9 @@ function MovingRandRing(count){
 
     collidableRingAndBoxes.push([count,BB_ring]);
 
+    if(count%2 == 0){
+        createRock(mesh.position.x +(Math.random()-0.5)*30 ,-1,mesh.position.z -420);
+    }
  
 }
 
@@ -788,6 +794,7 @@ function treelvl(){
             
             
             if(i%10==0){
+
                 createRock(newT.position.x ,-1,newT.position.z);
                 createRock((newT.position.x + 25.0) % 40 ,-1,newT.position.z);
             }
@@ -850,7 +857,7 @@ function lifewell(x,y,z){
     return true;
 }
 
-function lifeplace(count){
+function lifelvl(count){
     if(count==1){
     
     z= mesh.position.z - 500;
@@ -897,7 +904,8 @@ function changeLight(count){
     if(light.intensity==0.1)light.intensity=1.25;
     else light.intensity = 0.1;
 
-    score += 1000;
+    score += light_score;
+    vel += 0.25;
     return true;
 }
 
@@ -961,7 +969,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [ MovingRandRing, treelvl,wait1,lifeplace, wait1, wait1 , changeLight ]; ///TODO SWITCH F
+    mode = [ MovingRandRing, treelvl, wait1, wait1 , lifelvl, wait1, wait1, changeLight ]; ///TODO SWITCH F
 
    
 
@@ -989,7 +997,7 @@ function remove1life(){
 }
 
 function gain1life(){
-    if(lifes==maxlifes){score += 1000; return;}
+    if(lifes==maxlifes){score += life_score; return;}
     sprite_ico_array[lifes].material.color.r=1.0;
     lifes+=1;
 }
@@ -1043,7 +1051,7 @@ function CheckCollisions(){
     if(idx_col != -1){
         scene.remove( scene.getObjectByName(idx_col) );//collidableRingAndBoxes[idx_col][0]);
         
-        if(last_coll != idx_col) {last_coll = idx_col; score+=10;}
+        if(last_coll != idx_col) {last_coll = idx_col; score+=ring_score;}
     }
 
     if(life_flag_coll)
@@ -1063,11 +1071,6 @@ var obs_delay = 100.0;
 function animate() {
 
   requestAnimationFrame( animate );
-
-  remove1life();
-  remove1life();
-  remove1life();
-
   
   moveMesh();  
 
@@ -1076,7 +1079,7 @@ function animate() {
   if( pos < old_pos - obs_delay && pos != 0.0 ) {
       old_pos = pos;
       createObs(); 
-      if(vel < maxvel) vel=vel*1.01;  //TODO
+      //if(vel < maxvel) vel=vel*1.01;  //TODO
     }
   
   repositionCam();
@@ -1101,7 +1104,7 @@ function start(){
     animate();
 
     setTimeout(() => {
-        vel=2.0;
+        vel=Diff_vel;
     }, 1000);
     
 }
