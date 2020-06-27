@@ -39,9 +39,10 @@ grassTXT.repeat.set( 1, 200 );
 var giraffeTXT = new THREE.TextureLoader().load( 'textures/giraffeTXT.jpg' );
 var facefurTXT = new THREE.TextureLoader().load( 'textures/facefur.jpg' );
 
-
+var long_plane_lenght = 20000;
 Planematerial = new THREE.MeshPhongMaterial({ map : grassTXT , side: THREE.DoubleSide});
-plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, 20000, 100 ), Planematerial);
+plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, long_plane_lenght, 100 ), Planematerial);
+plane.position.z = -long_plane_lenght/3 ;
 plane.rotation.x = Math.PI/2;
 
 var controls;
@@ -93,7 +94,7 @@ var bigp = 1;
 var normalp = 2;
 var smallp = 3;
 
-var choosen_plane = 3; //TODO menu di scelta
+var choosen_plane = 2;
 
 
 
@@ -960,7 +961,7 @@ var mode_idx = 0 ;
 
 function createObs(){
 
-    mode = [ lifeplace, treelvl,wait1,lifeplace, wait1, wait1 , changeLight ]; ///TODO SWITCH F
+    mode = [ MovingRandRing, treelvl,wait1,lifeplace, wait1, wait1 , changeLight ]; ///TODO SWITCH F
 
    
 
@@ -972,13 +973,18 @@ function createObs(){
          
     }
     if(mode_idx >= mode.length) mode_idx = 0;  //TODO if endless reset else do end
+
     fun_count += 1;
 
+    if(mesh.position.z - 1000  < -long_plane_lenght) {
+        plane.position.z = mesh.position.z -800;
+    }
 
 }
 
 function remove1life(){
     lifes-=1;
+    if(lifes==0){ endgame(); return;}
     sprite_ico_array[lifes].material.color.r=0.0;
 }
 
@@ -1051,13 +1057,17 @@ function CheckCollisions(){
     }
 }
 
-
 var old_pos = 0.0;
 var obs_delay = 100.0;
 
 function animate() {
 
   requestAnimationFrame( animate );
+
+  remove1life();
+  remove1life();
+  remove1life();
+
   
   moveMesh();  
 
@@ -1066,12 +1076,11 @@ function animate() {
   if( pos < old_pos - obs_delay && pos != 0.0 ) {
       old_pos = pos;
       createObs(); 
-      if(vel < maxvel) vel=vel*1.01;
+      if(vel < maxvel) vel=vel*1.01;  //TODO
     }
   
   repositionCam();
   
-  if(true)
   CheckCollisions();
     
   renderer.render( scene, camera );  //render scene + cam
@@ -1092,10 +1101,11 @@ function start(){
     animate();
 
     setTimeout(() => {
-        vel=1.0;
+        vel=2.0;
     }, 1000);
     
 }
+
 
 
 

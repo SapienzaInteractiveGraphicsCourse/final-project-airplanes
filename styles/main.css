@@ -45,6 +45,13 @@ body {
 
 }
 
+#com_menu{
+  text-align:center;
+  border-top: 100px solid transparent;
+  font-size:100px;
+  font-family:shadows into light;
+}
+
 .button_menu{ 
   border-radius:10%;
   text-align:center;
@@ -80,6 +87,11 @@ body {
 }
 
 
+#endScene{
+  height: 100%; 
+}
+
+
 
 #test {
   position:relative;
@@ -98,3 +110,4 @@ body {
   
   cursor:pointer; 
 }
+
