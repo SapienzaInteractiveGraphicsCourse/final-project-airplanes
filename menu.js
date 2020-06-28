@@ -11,7 +11,7 @@ function init_starting_menu(){  //to avoid bug when reloading
 
     document.getElementById("menu").style.display = "block";
 
-    setTimeout(() => {     play();   }, 1000); 
+    setTimeout(() => {     play();   }, 1500); 
 
 }
 

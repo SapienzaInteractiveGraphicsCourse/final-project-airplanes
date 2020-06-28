@@ -25,6 +25,7 @@ var ring3;
 var three;
 
 //texture
+var bgTXT = new THREE.TextureLoader().load( 'textures/background.png' );
 var legnoTXT = new THREE.TextureLoader().load( 'textures/marr.PNG' );
 legnoTXT.wrapS = legnoTXT.wrapT = THREE.RepeatWrapping;
 legnoTXT.offset.set( 1, 0 );
@@ -1052,7 +1053,7 @@ function CheckCollisions(){
     if(idx_col != -1){
         scene.remove( scene.getObjectByName(idx_col) );//collidableRingAndBoxes[idx_col][0]);
         
-        if(last_coll != idx_col) {last_coll = idx_col; score+=ring_score; coinSound.currentTime=0.0; }
+        if(last_coll != idx_col) {last_coll = idx_col; score+=ring_score; }
     }
 
     if(life_flag_coll)

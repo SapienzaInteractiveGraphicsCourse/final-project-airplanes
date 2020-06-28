@@ -1,4 +1,5 @@
 
+
 var listener = new THREE.AudioListener();
 
 var sound = new THREE.Audio( listener );
@@ -8,9 +9,7 @@ audioLoader.load( "/audio/BigCarTheft.mp3", function( buffer ) {
 	sound.setBuffer( buffer );
 	sound.setLoop( true );
 	sound.setVolume( 0.5 );
-	sound.play();
 });
-
 /*
 var coinSound = new THREE.Audio( listener );
 var audioLoader2 = new THREE.AudioLoader();
