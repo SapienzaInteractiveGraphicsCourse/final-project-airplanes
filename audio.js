@@ -1,30 +1,16 @@
 
-
 var listener = new THREE.AudioListener();
 
 var sound = new THREE.Audio( listener );
 
 var audioLoader = new THREE.AudioLoader();
-audioLoader.load( "/audio/BigCarTheft.MP3", function( buffer ) {
+audioLoader.load( "url(https://sapienzainteractivegraphicscourse.github.io/final-project-airplanes/audio/BigCarTheft.MP3)", function( buffer ) {
 	sound.setBuffer( buffer );
 	sound.setLoop( true );
 	sound.setVolume( 0.5 );
 });
-/*
-var coinSound = new THREE.Audio( listener );
-var audioLoader2 = new THREE.AudioLoader();
-audioLoader2.load( "/audio/coinAudio.wav", function( buffer2 ) {
-	coinSound.setBuffer( buffer2 );
-	coinSound.setVolume( 0.2 );
-});
-*/
-
-
-
 
 function play(){
-
-    
 
     //document.getElementById('audio').play();
 

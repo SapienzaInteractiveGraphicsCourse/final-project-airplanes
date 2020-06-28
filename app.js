@@ -25,7 +25,7 @@ var ring3;
 var three;
 
 //texture
-var bgTXT = new THREE.TextureLoader().load( 'textures/background.PNG' );
+
 var legnoTXT = new THREE.TextureLoader().load( 'textures/marr.PNG' );
 legnoTXT.wrapS = legnoTXT.wrapT = THREE.RepeatWrapping;
 legnoTXT.offset.set( 1, 0 );
@@ -751,7 +751,7 @@ function MovingRandRing(count){
     collidableRingAndBoxes.push([count,BB_ring]);
 
     if(count%2 == 0){
-        createRock(mesh.position.x +(Math.random()-0.5)*30 ,-1,mesh.position.z -420);
+        createRock(mesh.position.x +(Math.random()-0.5)*20 ,-1,mesh.position.z +1000);
     }
  
 }
@@ -985,8 +985,8 @@ function createObs(){
 
     fun_count += 1;
 
-    if(mesh.position.z - 1000  < -long_plane_lenght) {
-        plane.position.z = mesh.position.z -800;
+    if(mesh.position.z - 4000  < -long_plane_lenght) {
+        plane.position.z = mesh.position.z ;
     }
 
 }
