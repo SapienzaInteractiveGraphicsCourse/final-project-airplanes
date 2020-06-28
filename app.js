@@ -9,7 +9,7 @@ var vel = 0.0;
 var maxvel = 2.5;
 var minvel = -0.3;
 var Diff_vel = 2.0;  //2nd plane
-var angleY = -Math.PI/2;//0.0;  ///for V not orientation
+var angleY = -Math.PI/2;//for Vel not orientation
 var angleX = 0.0;
 var dx = 0.0;
 var dz = 0.0;
@@ -138,7 +138,7 @@ function loadModels(){
          // called while loading is progressing
          function ( xhr ) {
  
-             console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+             console.log( 'loading model' );
  
          },
          // called when loading has errors
@@ -208,7 +208,7 @@ function loadModels(){
         // called while loading is progressing
         function ( xhr ) {
 
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+            console.log( 'loading model' );
 
         },
         // called when loading has errors
@@ -239,7 +239,7 @@ function loadModels(){
         // called while loading is progressing
         function ( xhr ) {
 
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+            console.log( 'loading model' );
 
         },
         // called when loading has errors
@@ -278,7 +278,7 @@ function loadModels(){
         // called while loading is progressing
         function ( xhr ) {
 
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+            console.log( 'loading model' );
 
         },
         // called when loading has errors
@@ -316,7 +316,7 @@ function loadModels(){
         // called while loading is progressing
         function ( xhr ) {
 
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+            console.log( 'loading model' );
 
         },
         // called when loading has errors
@@ -751,7 +751,7 @@ function MovingRandRing(count){
     collidableRingAndBoxes.push([count,BB_ring]);
 
     if(count%2 == 0){
-        createRock(mesh.position.x +(Math.random()-0.5)*20 ,-1,mesh.position.z +1000);
+        createRock(mesh.position.x +(Math.random()-0.5)*25 ,-1,mesh.position.z -400);
     }
  
 }
