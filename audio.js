@@ -5,7 +5,7 @@ var listener = new THREE.AudioListener();
 var sound = new THREE.Audio( listener );
 
 var audioLoader = new THREE.AudioLoader();
-audioLoader.load( "/audio/BigCarTheft.mp3", function( buffer ) {
+audioLoader.load( "/audio/BigCarTheft.MP3", function( buffer ) {
 	sound.setBuffer( buffer );
 	sound.setLoop( true );
 	sound.setVolume( 0.5 );

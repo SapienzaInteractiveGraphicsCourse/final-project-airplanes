@@ -118,7 +118,7 @@ function endgame(){
     document.getElementById("endScene").style.height=1000;//  window.screen.height;
     document.getElementById("endScene").style.width=   window.screen.width;
     
-    document.getElementById("endScene").style.backgroundImage = "url('../textures/background.png')";
+    document.getElementById("endScene").style.backgroundImage = "url('../textures/background.PNG')";
 
     document.getElementById("info").style.display = "none";
     document.getElementById("endText").innerHTML = "Final score: " + document.getElementById("info").innerHTML;

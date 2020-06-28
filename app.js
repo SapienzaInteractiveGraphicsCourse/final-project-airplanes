@@ -25,7 +25,7 @@ var ring3;
 var three;
 
 //texture
-var bgTXT = new THREE.TextureLoader().load( 'textures/background.png' );
+var bgTXT = new THREE.TextureLoader().load( 'textures/background.PNG' );
 var legnoTXT = new THREE.TextureLoader().load( 'textures/marr.PNG' );
 legnoTXT.wrapS = legnoTXT.wrapT = THREE.RepeatWrapping;
 legnoTXT.offset.set( 1, 0 );
