@@ -18,14 +18,17 @@
     <script src="menu.js"></script>
 
   <script>  
+
+
   </script>
 
   </head>
 
 
-  <body>
+  <body onload="init_starting_menu()">
     <a id="info" style="display:none;">0</a>
-    
+
+    <audio id="audio" src="/audio/BigCarTheft.mp3" preload="auto"></audio>
 
     
     
@@ -33,7 +36,7 @@
       <div id="title"><p>PLANERUN</p></div>
       <div class="button_menu" id ="play" onclick="start();"><p>PLAY</p></div>
       <br>
-      <div class="button_menu" id ="options" onclick="show_options();"><p>OPTIONS</p></div>
+      <div class="button_menu" id ="options" onclick="show_options();"><p>SETTINGS</p></div>
       <br>
       <div class="button_menu" id ="commands" onclick="show_commands();"><p>COMMANDS</p></div> <br><br>
       <div id="menu" style="display:block; font-size: 20px;">Developed by Pietro Manganelli Conforti</div>
@@ -54,6 +57,9 @@
       <div class="button_opt" id ="yes_coll" onclick="setColl();"style="display:inline-block; "><p>Yes</p></div>
       <div class="button_opt" id ="no_coll" onclick="noColl();" style="display:inline-block; background:#f52b2b;"><p>No</p></div>
       <br>
+      <div id="text_opt" style="display:inline-block">audio soundtrack:</p></div>
+      <div class="button_opt" id ="stopB" onclick="stop_music();" style="display:inline-block;"><p>stop</p></div>
+      <div class="button_opt" id ="playB" onclick="play();" style="display:inline-block; background:#f52b2b;"><p>play</p></div>
       <br>
       <div class="button_opt" id ="no_fog" onclick="back();" style="display:inline-block; "><p>BACK</p></div>
       
@@ -75,7 +81,7 @@
     </div>
 
  
-    <div id="scene-container"></div>
+    <div id="scene-container" ></div>
 
   </body>
 </html>

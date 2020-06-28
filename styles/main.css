@@ -35,10 +35,10 @@ body {
 }
 
 #opt_menu{
-  border-top: 75px solid transparent;
+  border-top: 50px solid transparent;
   border-left: 75px solid transparent;
   text-align:left;
-  font-size:50px;
+  font-size:45px;
   font-family:shadows into light;
 
 }

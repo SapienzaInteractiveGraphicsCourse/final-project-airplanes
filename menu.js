@@ -1,3 +1,20 @@
+function init_starting_menu(){  //to avoid bug when reloading
+    document.getElementById("opt_menu").style.display = "none";
+
+    document.getElementById("com_menu").style.display = "none";
+
+    document.getElementById("scene-container").style.display = "none";
+
+    document.getElementById("endScene").style.display = "none";
+
+    document.getElementById("menu").style.display = "block";
+
+    setTimeout(() => {
+        play();
+    }, 500); 
+
+}
+
 function show_options(){
 
     document.getElementById("menu").style.display = "none";
@@ -33,7 +50,7 @@ function show_options(){
   
 function setEasy(){
     choosen_plane = 1;
-    Diff_vel = 1.5;
+    Diff_vel = 1.0;
     maxvel = 2.0;
     ring_score = 100;
     light_score = 500;
@@ -110,3 +127,22 @@ function endgame(){
 function restart(){
     location.reload();
 }
+
+function play(){
+
+    document.getElementById('audio').play();
+    document.getElementById("audio").loop = true;
+
+    document.getElementById("playB").style.background = "#f52b2b";
+    document.getElementById("stopB").style.background = "#006680";
+
+  }
+
+  function stop_music(){
+
+  document.getElementById('audio').pause();
+
+  document.getElementById("playB").style.background = "#006680";
+  document.getElementById("stopB").style.background = "#f52b2b";
+
+  }

@@ -722,7 +722,7 @@ function MovingRandRing(count){
     new_rs= rings[count];
     new_rs.name = count;
     new_rs.position.z = mesh.position.z;
-    new_rs.position.z -= 350.0;
+    new_rs.position.z -= 280.0;
     new_rs.position.x += (Math.random()-0.5)*50;
     new_rs.position.y = (Math.random()-0.4)*10;
 
@@ -1097,6 +1097,8 @@ function animate() {
 
 function start(){
     document.getElementById("info").style.display="block";
+    
+    document.getElementById("scene-container").style.display = "block";
     //document.body.style.cursor = 'none';
     document.getElementById("menu").style.display="none";
     init();
