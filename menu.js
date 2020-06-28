@@ -1,3 +1,5 @@
+
+
 function init_starting_menu(){  //to avoid bug when reloading
     document.getElementById("opt_menu").style.display = "none";
 
@@ -9,9 +11,7 @@ function init_starting_menu(){  //to avoid bug when reloading
 
     document.getElementById("menu").style.display = "block";
 
-    setTimeout(() => {
-        play();
-    }, 500); 
+    setTimeout(() => {     play();   }, 1000); 
 
 }
 
@@ -128,21 +128,7 @@ function restart(){
     location.reload();
 }
 
-function play(){
 
-    document.getElementById('audio').play();
-    document.getElementById("audio").loop = true;
 
-    document.getElementById("playB").style.background = "#f52b2b";
-    document.getElementById("stopB").style.background = "#006680";
 
-  }
 
-  function stop_music(){
-
-  document.getElementById('audio').pause();
-
-  document.getElementById("playB").style.background = "#006680";
-  document.getElementById("stopB").style.background = "#f52b2b";
-
-  }

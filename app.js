@@ -1007,6 +1007,7 @@ var last_coll = -1;
 
 var life_flag_coll = true;
 
+
 function CheckCollisions(){
     collision = false;
 
@@ -1051,7 +1052,7 @@ function CheckCollisions(){
     if(idx_col != -1){
         scene.remove( scene.getObjectByName(idx_col) );//collidableRingAndBoxes[idx_col][0]);
         
-        if(last_coll != idx_col) {last_coll = idx_col; score+=ring_score;}
+        if(last_coll != idx_col) {last_coll = idx_col; score+=ring_score; coinSound.currentTime=0.0; }
     }
 
     if(life_flag_coll)
