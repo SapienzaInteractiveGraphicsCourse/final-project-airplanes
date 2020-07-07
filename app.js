@@ -3,7 +3,6 @@ var camera;
 var renderer;
 var scene;
 var mesh;
-var stop=false;
 
 var vel = 0.0;
 var maxvel = 2.5;
@@ -17,7 +16,6 @@ var dz = 0.0;
 var baseAngleY = Math.PI;
 var baseangleX = 0;
 
-
 var ring1;
 var ring2;
 var ring3;
@@ -25,56 +23,55 @@ var ring3;
 var three;
 
 //texture
-
 var legnoTXT = new THREE.TextureLoader().load( 'textures/marr.PNG' );
-legnoTXT.wrapS = legnoTXT.wrapT = THREE.RepeatWrapping;
-legnoTXT.offset.set( 1, 0 );
+    legnoTXT.wrapS = legnoTXT.wrapT = THREE.RepeatWrapping;
+    legnoTXT.offset.set( 1, 0 );
 var greenpaintTXT = new THREE.TextureLoader().load( 'textures/green-paint.jpg' );
 var realgrassTXT = new THREE.TextureLoader().load( 'textures/lightgrass.jpg' );
-realgrassTXT.wrapS = THREE.RepeatWrapping; 
-realgrassTXT.wrapT = THREE.RepeatWrapping;
-realgrassTXT.repeat.set( 1, 10 );
+    realgrassTXT.wrapS = THREE.RepeatWrapping; 
+    realgrassTXT.wrapT = THREE.RepeatWrapping;
+    realgrassTXT.repeat.set( 1, 10 );
 var grassTXT = new THREE.TextureLoader().load( 'textures/poligrass.jpg' );
-grassTXT.wrapS = THREE.RepeatWrapping; 
-grassTXT.wrapT = THREE.RepeatWrapping;
-grassTXT.repeat.set( 1, 200 );
+    grassTXT.wrapS = THREE.RepeatWrapping; 
+    grassTXT.wrapT = THREE.RepeatWrapping;
+    grassTXT.repeat.set( 1, 200 );
 var giraffeTXT = new THREE.TextureLoader().load( 'textures/giraffeTXT.jpg' );
 var facefurTXT = new THREE.TextureLoader().load( 'textures/facefur.jpg' );
 
+//plane 
 var long_plane_lenght = 20000;
-Planematerial = new THREE.MeshPhongMaterial({ map : grassTXT , side: THREE.DoubleSide});
-plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, long_plane_lenght, 100 ), Planematerial);
-plane.position.z = -long_plane_lenght/3 ;
-plane.rotation.x = Math.PI/2;
+    Planematerial = new THREE.MeshPhongMaterial({ map : grassTXT , side: THREE.DoubleSide});
+    plane = new THREE.Mesh(new THREE.PlaneGeometry( 100, long_plane_lenght, 100 ), Planematerial);
+    plane.position.z = -long_plane_lenght/3 ;
+    plane.rotation.x = Math.PI/2;
 
-var controls;
 
-var collidableObject = [];  //TODO
+var controls; //Orbit controls, to debug
 
-var collidableTreeBoxes = [];  //TODO
+
+//Collision arrays
+var collidableTreeBoxes = [];  //and rocks
 var collidableRingAndBoxes = [];
 var lifeBoxes = [];
 
-
+//BB
 var meshBB;
 var firstBB;
 var secondBB;
 var testBB;
 
+//no collision mode
 var collision;
-
 
 //FOG
 var background_color= 0x8FFFFF;
 var fog_flag = true;
 
-
 //HP BAR
 var sprite_ico_array = [];
-var lifes = 5;  //TODO DIFFICULTY
+var lifes = 5;  
 var maxlifes = 5;
 var spriteMap;
-
 
 // SCORE
 var score = 0;
@@ -87,19 +84,16 @@ life_score = 1500;
 var light;
 var spotLight;
 
-
-//MODEL
+//MODELS
 var rock;
 var boxRock;
-
 var torso;
 
 //PLANES
 var bigp = 1;
 var normalp = 2;
 var smallp = 3;
-
-var choosen_plane = 2;
+var choosen_plane = 2; //default plane
 
 
 
@@ -138,7 +132,7 @@ function loadModels(){
          // called while loading is progressing
          function ( xhr ) {
  
-             console.log( 'loading model' );
+             console.log( 'loading normal plane model' );
  
          },
          // called when loading has errors
@@ -181,9 +175,8 @@ function loadModels(){
         */
        }
 
-     loader.load(// resource URL
+     loader.load(
         'models/rocks/scene.gltf',
-        // called when the resource is loaded
         function ( gltf ) {
             gltf.scene.position.y = 0.0;
             gltf.scene.position.x = 10.0;
@@ -208,7 +201,7 @@ function loadModels(){
         // called while loading is progressing
         function ( xhr ) {
 
-            console.log( 'loading model' );
+            console.log( 'loading rock model' );
 
         },
         // called when loading has errors
@@ -219,14 +212,12 @@ function loadModels(){
         }
     );
 
-    loader.load(// resource URL
+    loader.load(
         'models/statue/scene.gltf',
-        // called when the resource is loaded
         function ( gltf ) {
             gltf.scene.position.y = 10.0;
             gltf.scene.position.x = 0.0;
             gltf.scene.scale.set(14,18,14);
-            //gltf.scene.rotation.y = Math.PI;
             window.statue =  gltf.scene;
 
             gltf.scene; // THREE.Group
@@ -236,23 +227,12 @@ function loadModels(){
 
             
         },
-        // called while loading is progressing
-        function ( xhr ) {
-
-            console.log( 'loading model' );
-
-        },
-        // called when loading has errors
-        function ( error ) {
-
-            console.log( "[MODEL LOADER] " + error );
-
-        }
+        function ( xhr ) {   console.log( 'loading statue model' );    },
+        function ( error ) { console.log( "[MODEL LOADER] " + error );   }
     );
 
-    loader.load(// resource URL
+    loader.load(
         'models/bigPlane/scene.gltf',
-        // called when the resource is loaded
         function ( gltf ) {
             gltf.scene.position.y = 0.0;
             gltf.scene.position.x = -10.0;
@@ -272,26 +252,13 @@ function loadModels(){
             gltf.scenes; // Array<THREE.Group>
             gltf.cameras; // Array<THREE.Camera>
             gltf.asset; // Object
-
             
         },
-        // called while loading is progressing
-        function ( xhr ) {
+        function ( xhr ) {   console.log( 'loading big plane model' );    },
+        function ( error ) {    console.log( "[MODEL LOADER] " + error );  } );
 
-            console.log( 'loading model' );
-
-        },
-        // called when loading has errors
-        function ( error ) {
-
-            console.log( "[MODEL LOADER] " + error );
-
-        }
-    );
-
-    loader.load(// resource URL
+    loader.load(
         'models/paperPlane/scene.gltf',
-        // called when the resource is loaded
         function ( gltf ) {
             gltf.scene.position.y = -10.0;
             gltf.scene.position.x = -5.0;
@@ -309,27 +276,40 @@ function loadModels(){
             gltf.scene; // THREE.Group
             gltf.scenes; // Array<THREE.Group>
             gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-
-            
+            gltf.asset; // Object  
         },
-        // called while loading is progressing
         function ( xhr ) {
-
-            console.log( 'loading model' );
+            console.log( 'loading paper plane model' );
 
         },
-        // called when loading has errors
         function ( error ) {
-
             console.log( "[MODEL LOADER] " + error );
-
         }
     );
 
+    loader.load(
+        'models/cloud/scene.gltf',
+        function ( gltf ) {
+            gltf.scene.position.y = 10.0;
+            gltf.scene.position.z = -100.0;
+            gltf.scene.scale.set(5,5,5);
 
+            window.cloud = gltf.scene ;
+
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object  
+        },
+        function ( xhr ) {
+            console.log( 'loading paper plane model' );
+
+        },
+        function ( error ) {
+            console.log( "[MODEL LOADER] " + error );
+        }
+    );
 }
-
 
 
 function init() {
@@ -348,14 +328,15 @@ function init() {
     const far = 500;
 
     camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-    //camera = new THREE.OrthographicCamera( 150, 150, 150, 150, -10, 150);  //OrthographicCamera( left , right , top , bottom , near , far  )
+    //camera = new THREE.OrthographicCamera( 150, 150, 150, 150, -10, 150);  
+    //OrthographicCamera( left , right , top , bottom , near , far  )
 
 
     // reposition camera form  0 0 0
     camera.position.set( 0, 20, 70 );
     camera.lookAt( scene.position );
 
-    // create two geometry
+    // create mesh geometry
 
     const geometry = new THREE.BoxBufferGeometry( 10, 3, 5 );
 
@@ -367,8 +348,6 @@ function init() {
 
     loadModels();
     
-    
-
     //-----// RING model //-----//
 
     const material2 = new THREE.MeshPhongMaterial ( { color: 0xdfdf03 } );
@@ -441,7 +420,6 @@ function init() {
 
     testBB = new THREE.Box3().setFromObject(tree);
     
-
 
     scene.add(tree); //4DEBUGGING
 
@@ -559,22 +537,9 @@ function init() {
 
     //scene.add(torso);
 
-    
-    
 
 
-
-
-
-
-
-
-
-    
-
-
-
-    // create a WebGLRenderer and set its width and height
+    // create a WebGLRenderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( container.clientWidth, container.clientHeight );
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -587,8 +552,6 @@ function init() {
 
     // add the automatically created <canvas> element to the page
     container.appendChild( renderer.domElement ); 
-
-
 
 
     //HEALTH SPRITE//
@@ -605,25 +568,15 @@ function init() {
     }
 
 
-    
-    
-
-
     //FOG
     if(fog_flag) scene.fog = new THREE.Fog( 0x8FFFFF, 300, 400 );
 
-
- 
-    
-   
-
     ////
 
-    // Create a directional light and add it to the scene
+    // Create a directional light
     light = new THREE.DirectionalLight( 0xaaaaaa, 1.25);
     light.position.set( 30, 30, 30 ); //move light up 
     scene.add( light );
-
 
     spotLight = new THREE.SpotLight( 0x888855, 1 );
 
@@ -735,7 +688,6 @@ function MovingRandRing(count){
     
     BB_ring = new THREE.Box3().setFromObject(new_rs).expandByScalar(1); 
 
-
     renderer.setAnimationLoop( function () {
         if(rings[count].position.x > 30.0) dxr= -dxr;
         if(rings[count].position.x < -30.0) dxr= -dxr;
@@ -751,7 +703,10 @@ function MovingRandRing(count){
     collidableRingAndBoxes.push([count,BB_ring]);
 
     if(count%2 == 0){
-        createRock(mesh.position.x +(Math.random()-0.5)*25 ,-1,mesh.position.z -400);
+        xr = mesh.position.x +(Math.random()-0.5)*25
+        if(xr > 50.0 ) xr = 50.0 
+        if(xr < -50.0 ) xr = -50.0 
+        createRock(xr ,-1,mesh.position.z -400);
     }
  
 }
@@ -766,43 +721,37 @@ var plane_lenght = n_tree * space;
 
 function treelvl(){
 
-    if(!flag_p){ //crea il piano
-        
-        newPlanematerial = new THREE.MeshPhongMaterial({ map : realgrassTXT , side: THREE.DoubleSide});
-        newplane = new THREE.Mesh(new THREE.PlaneGeometry( 100, n_tree*space , 100 ), newPlanematerial);
-        newplane.rotation.x = Math.PI/2;
-        newplane.position.z = mesh.position.z;
-        newplane.position.z -= 1000.0;
-        newplane.position.y += 1.0;
+    if(!flag_p){ 
+        //plane under the trees
+        //newPlanematerial = new THREE.MeshPhongMaterial({ map : realgrassTXT , side: THREE.DoubleSide});
+        //newplane = new THREE.Mesh(new THREE.PlaneGeometry( 100, n_tree*space , 100 ), newPlanematerial);
+        //newplane.rotation.x = Math.PI/2;
+        //newplane.position.z = mesh.position.z;
+        //newplane.position.z -= 1000.0;
+        //newplane.position.y += 1.0;
         //scene.add(newplane);
-
         
-        
-        for(i = 0; i< n_tree ; i+=1){  //da mettere qualcosa che si muove onvece di un albero ogni tanto / monete
+        for(i = 0; i< n_tree ; i+=1){  //forest obstacles
             
             newT = tree.clone();
             newT.position.z = mesh.position.z;
-            newT.position.z -= (400 + i *  space    );  
+            newT.position.z -= (400 + i *  space );  
             newT.position.x = (Math.random()-0.5) * 95; 
 
             r=Math.random()/2 + 0.8; //tra 1 e 1.5
 
             newT.scale.y = r
 
-            newT.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI
-        
-           
-            
+            newT.updateMatrixWorld();   //PER AGGIORANRE LE COLLISIONI     
             
             if(i%10==0){
-
                 createRock(newT.position.x ,-1,newT.position.z);
                 createRock((newT.position.x + 25.0) % 40 ,-1,newT.position.z);
             }
             else{
-                BB_log = new THREE.Box3().setFromObject(newT.children[0]).expandByScalar(1.5);  //TODO respect the model
+                BB_log = new THREE.Box3().setFromObject(newT.children[0]).expandByScalar(1.5);  //
                 collidableTreeBoxes.push(BB_log);
-                BB_crown = new THREE.Box3().setFromObject(newT.children[1]).expandByScalar(1);   
+                BB_crown = new THREE.Box3().setFromObject(newT.children[1]).expandByScalar(1.2);   
                 collidableTreeBoxes.push(BB_crown);
                 scene.add(newT);
             }
@@ -832,7 +781,7 @@ function end(){
 
 var interval;
 
-function lifewell(x,y,z){
+function lifewell(x,y,z){ //life cube
 
     new_r = new THREE.Mesh( new THREE.BoxBufferGeometry( 10, 10, 10 ),  new THREE.MeshStandardMaterial( { map: spriteMap } ) );
     new_r.position.x = x;
@@ -933,7 +882,6 @@ function create_giraffe(x,z){
     var beta = -Math.PI/40;
 
     delta_x =  0.8;
-
     delta_z = 1;
 
     var interv = setInterval(() => {
@@ -972,8 +920,6 @@ function createObs(){
 
     mode = [ MovingRandRing, treelvl, wait1, wait1 , lifelvl, wait1, wait1, changeLight ]; ///TODO SWITCH F
 
-   
-
     ret_end = (mode[mode_idx])(fun_count);
 
     if(ret_end){
@@ -981,11 +927,11 @@ function createObs(){
          fun_count = 0;
          
     }
-    if(mode_idx >= mode.length) mode_idx = 0;  //TODO if endless reset else do end
+    if(mode_idx >= mode.length) mode_idx = 0;  //repeat
 
     fun_count += 1;
 
-    if(mesh.position.z - 4000  < -long_plane_lenght) {
+    if(mesh.position.z - 4000  < -long_plane_lenght) { //if the plane ends
         plane.position.z = mesh.position.z ;
     }
 
@@ -1018,7 +964,7 @@ function CheckCollisions(){
   
     if(collision && !flagColl) {
 
-        //window.alert("COLLIDE!");
+        //window.alert("COLLISION!");
 
         remove1life();
 
@@ -1067,6 +1013,21 @@ function CheckCollisions(){
     }
 }
 
+
+function createCloud() {
+    if(Math.random()<0.8){
+        r = Math.random();
+        cloud = window.cloud.clone();
+        cloud.scale.set(5+5*r,5+5*r,5+5*r);
+        cloud.position.x = r > 0.5 ? -130 : 130 ;
+        cloud.position.y = 20.0 + r * 10;
+        cloud.position.z = mesh.position.z - 400.0;
+        cloud.rotation.y = -Math.PI/1.8 + (0.4*r);
+        scene.add(cloud)
+    }
+}
+
+
 var old_pos = 0.0;
 var obs_delay = 100.0;
 
@@ -1081,13 +1042,14 @@ function animate() {
   if( pos < old_pos - obs_delay && pos != 0.0 ) {
       old_pos = pos;
       createObs(); 
-      //if(vel < maxvel) vel=vel*1.01;  //TODO
+      createCloud();
+      //if(vel < maxvel) vel=vel*1.01; 
     }
   
   repositionCam();
   
   CheckCollisions();
-    
+
   renderer.render( scene, camera );  //render scene + cam
 
   //score
@@ -1108,7 +1070,7 @@ function start(){
     animate();
 
     setTimeout(() => {
-        vel=Diff_vel;
+        vel=Diff_vel; //short delay before it starts
     }, 1000);
     
 }
@@ -1117,122 +1079,100 @@ function start(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //controller
+{
+    var map = {87: false, 65: false, 68: false, 83: false,75: false, 76:false };
 
-var map = {87: false, 65: false, 68: false, 83: false,75: false, 76:false };
 
-
-function goup(){
-    if(angleX < Math.PI/4){
-    angleX += Math.PI/70;
-    mesh.rotation.x =  angleX/4;
-    }
-}
-
-function godown(){
-    if(angleX > -Math.PI/4){
-    angleX -= Math.PI/70;
-    mesh.rotation.x =  angleX/4;
-    }
-}
-
-function goright(){
-    if(angleY < -Math.PI/12  ){
-    angleY += Math.PI/100;
-    mesh.rotation.y = -angleY + Math.PI/2 + baseAngleY + Math.PI  ;
-    }
-}
-
-function goleft(){
-    if(angleY > -11*Math.PI/12  ){
-    angleY -= Math.PI/100;
-    mesh.rotation.y = -angleY + Math.PI/2 + baseAngleY + Math.PI ;
-    }
-}
-
-function accelerate(){
-    if(vel<maxvel)
-        vel +=0.02;
-}
-
-function decelerate(){
-    if(vel>minvel)
-        vel -=0.02;
-}
-
-function pause(){
-    window.alert("gioco in pausa");
-}
-
-document.addEventListener('keydown', function(event){
-    if(event.keyCode == 76) spotLight.intensity = (spotLight.intensity+1 )% 2;
-    } );
-
-function Controller(keys, repeat) {
-    
-    var timers= {};
-
-    // if is pressed for the first time => true + timer to repeat the f
-    document.onkeydown= function(event) {
-        var key= (event || window.event).keyCode;
-        if (!(key in keys))
-            return true;
-        if (!(key in timers)) {
-            timers[key]= null;
-            keys[key]();
-            if (repeat!==0)
-                timers[key]= setInterval(keys[key], repeat);
-        }
-        return false;
-    };
-
-    // Cancel timeout & release key onkeyup
-
-    document.onkeyup= function(event) {
-        var key= (event || window.event).keyCode;
-        if (key in timers) {
-            if (timers[key]!==null)
-                clearInterval(timers[key]);
-            delete timers[key];
+    function goup(){
+        if(angleX < Math.PI/4){
+        angleX += Math.PI/70;
+        mesh.rotation.x =  angleX/4;
         }
     }
 
-    window.onblur= function() {  //to fix when window unfocused, relase all
-        for (key in timers)
-            if (timers[key]!==null)
-                clearInterval(timers[key]);
-        timers= {};
+    function godown(){
+        if(angleX > -Math.PI/4){
+        angleX -= Math.PI/70;
+        mesh.rotation.x =  angleX/4;
+        }
     }
+
+    function goright(){
+        if(angleY < -Math.PI/12  ){
+        angleY += Math.PI/100;
+        mesh.rotation.y = -angleY + Math.PI/2 + baseAngleY + Math.PI  ;
+        }
+    }
+
+    function goleft(){
+        if(angleY > -11*Math.PI/12  ){
+        angleY -= Math.PI/100;
+        mesh.rotation.y = -angleY + Math.PI/2 + baseAngleY + Math.PI ;
+        }
+    }
+
+    function accelerate(){
+        if(vel<maxvel)
+            vel +=0.02;
+    }
+
+    function decelerate(){
+        if(vel>minvel)
+            vel -=0.02;
+    }
+
+    function pause(){
+        window.alert("gioco in pausa");
+    }
+
+    document.addEventListener('keydown', function(event){
+        if(event.keyCode == 76) spotLight.intensity = (spotLight.intensity+1 )% 2;
+        } );
+
+    function Controller(keys, repeat) {
+        
+        var timers= {};
+
+        // if is pressed for the first time => true + timer to repeat the f
+        document.onkeydown= function(event) {
+            var key= (event || window.event).keyCode;
+            if (!(key in keys))
+                return true;
+            if (!(key in timers)) {
+                timers[key]= null;
+                keys[key]();
+                if (repeat!==0)
+                    timers[key]= setInterval(keys[key], repeat);
+            }
+            return false;
+        };
+
+        // Cancel timeout & release key onkeyup
+
+        document.onkeyup= function(event) {
+            var key= (event || window.event).keyCode;
+            if (key in timers) {
+                if (timers[key]!==null)
+                    clearInterval(timers[key]);
+                delete timers[key];
+            }
+        }
+
+        window.onblur= function() {  //to fix when window unfocused, relase all
+            for (key in timers)
+                if (timers[key]!==null)
+                    clearInterval(timers[key]);
+            timers= {};
+        }
+    }
+
+    Controller({
+        87: function() {  goup(); },
+        83: function() { godown(); },
+        65: function() { goleft();},
+        68: function() { goright();},
+        32: function() { pause();}
+    }, 30);
+
 }
-
-Controller({
-    87: function() {  goup(); },
-    83: function() { godown(); },
-    65: function() { goleft();},
-    68: function() { goright();},
-    32: function() { pause();}
-}, 30);
-

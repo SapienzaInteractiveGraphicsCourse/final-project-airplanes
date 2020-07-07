@@ -1,5 +1,4 @@
 
-
 function init_starting_menu(){  //to avoid bug when reloading
     document.getElementById("opt_menu").style.display = "none";
 
@@ -11,7 +10,7 @@ function init_starting_menu(){  //to avoid bug when reloading
 
     document.getElementById("menu").style.display = "block";
 
-    setTimeout(() => {     play();   }, 1500); 
+    setTimeout(() => {     play();   }, 1500);  //audio
 
 }
 
@@ -39,10 +38,7 @@ function show_options(){
 
   };
 
-
-
-
-
+  
   function info(){
       window.alert();
   }
