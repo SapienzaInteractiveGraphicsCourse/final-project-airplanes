@@ -526,7 +526,7 @@ function init() {
     head.add(right_eye);
 
 
-    tail = new THREE.Mesh( new THREE.BoxBufferGeometry(1,5, 1 ), new THREE.MeshPhongMaterial ({ color: 0x8A4117 }) );
+    tail = new THREE.Mesh( new THREE.BoxBufferGeometry(1, 5, 1 ), new THREE.MeshPhongMaterial ({ color: 0x8A4117 }) );
     tail.position.x += 0;
     tail.position.y -= 2;
     tail.position.z -= 13;
@@ -1129,12 +1129,16 @@ function start(){
     document.addEventListener('keydown', function(event){
         if(event.keyCode == 76) spotLight.intensity = (spotLight.intensity+1 )% 2;
         } );
+    
+    document.addEventListener('keydown', function(event){
+        if(event.keyCode == 32) pause();
+        } );
 
     function Controller(keys, repeat) {
         
         var timers= {};
 
-        // if is pressed for the first time => true + timer to repeat the f
+        // if is pressed for the first time => timer to repeat the f
         document.onkeydown= function(event) {
             var key= (event || window.event).keyCode;
             if (!(key in keys))
@@ -1167,12 +1171,13 @@ function start(){
         }
     }
 
-    Controller({
+    map = {
         87: function() {  goup(); },
         83: function() { godown(); },
         65: function() { goleft();},
-        68: function() { goright();},
-        32: function() { pause();}
-    }, 30);
+        68: function() { goright();}
+    }
+
+    Controller(map, 30);
 
 }

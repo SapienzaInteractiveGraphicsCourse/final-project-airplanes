@@ -10,7 +10,7 @@ function init_starting_menu(){  //to avoid bug when reloading
 
     document.getElementById("menu").style.display = "block";
 
-    setTimeout(() => {     play();   }, 1500);  //audio
+    setTimeout(() => {     play();   }, 500);  //audio
 
 }
 
@@ -117,7 +117,7 @@ function endgame(){
     document.getElementById("endScene").style.backgroundImage =
      "url('https://sapienzainteractivegraphicscourse.github.io/final-project-airplanes/textures/background.png')";
     
-    //document.getElementById("endScene").style.backgroundImage = "url('../textures/background.PNG')";
+    //document.getElementById("endScene").style.backgroundImage = "url('../textures/background.PNG')"; doesn't load on githubpage 
 
     document.getElementById("info").style.display = "none";
     document.getElementById("endText").innerHTML = "Final score: " + document.getElementById("info").innerHTML;
