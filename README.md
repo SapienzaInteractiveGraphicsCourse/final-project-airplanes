@@ -7,7 +7,7 @@ As explained in the menu by pressing the command button:
 * `L` to turn on/off the light.
 * other options, as the difficulty levels, are available in the setting section.
 
-For an explanation of the various stages of the game and its technical details please read the documentation [here](report.pdf).
+For an explanation of the various stages of the game and its technical details please read the documentation [here](reportIG-1754825.pdf).
 ## Game link
 Play the game by clicking this [link]( https://sapienzainteractivegraphicscourse.github.io/final-project-airplanes/).
 ## Contact
