@@ -293,7 +293,7 @@ function loadModels(){
             gltf.scene.position.y = 10.0;
             gltf.scene.position.z = -100.0;
             gltf.scene.scale.set(5,5,5);
-
+            
             window.cloud = gltf.scene ;
 
             gltf.scene; // THREE.Group
@@ -598,11 +598,6 @@ function init() {
 }
 
 
-
-
-
-
-
 function repositionCam(){
     camera.position.x = mesh.position.x;
     camera.position.y = mesh.position.y;
@@ -901,9 +896,21 @@ function create_giraffe(x,z){
         if(new_giraffe.children[0].rotation.x < Math.PI/12) beta = -beta;
 
         new_giraffe.children[0].rotation.x += beta;
+        
+        new_giraffe.children[0].children[0].rotation.x -= beta;
+
         new_giraffe.children[1].rotation.x -= beta;
+        
+        new_giraffe.children[1].children[0].rotation.x += beta;
+
         new_giraffe.children[2].rotation.x += beta;
+
+        new_giraffe.children[2].children[0].rotation.x -= beta;
+
         new_giraffe.children[3].rotation.x -= beta;
+
+        new_giraffe.children[3].children[0].rotation.x += beta;
+
         new_giraffe.position.z += delta_z ; 
 
         G_torso_Box.translate(new THREE.Vector3( 0, 0, delta_z ));
@@ -1013,19 +1020,31 @@ function CheckCollisions(){
     }
 }
 
+//var cloudsArray=[];
 
 function createCloud() {
-    if(Math.random()<0.8){
+    if(Math.random()<0.6){   //e cl arr < 5
         r = Math.random();
         cloud = window.cloud.clone();
         cloud.scale.set(5+5*r,5+5*r,5+5*r);
-        cloud.position.x = r > 0.5 ? -130 : 130 ;
+        cloud.position.x = r > 0.5 ? -130+Math.random()*40 : 130-Math.random()*40 ;
         cloud.position.y = 20.0 + r * 10;
         cloud.position.z = mesh.position.z - 400.0;
         cloud.rotation.y = -Math.PI/1.8 + (0.4*r);
-        scene.add(cloud)
+        scene.add(cloud);
+        cloudsArray.push(cloud);
     }
 }
+
+//function moveclouds(){
+//    for(i=0; i<cloudsArray.length;i++){ 
+//        if(cloudsArray[i].position.z >= mesh.position.z){
+//            cloudsArray.splice(i,1);
+//        }else{
+//            cloudsArray[i].position.z -=0.5;
+//        }
+//    }
+//}
 
 
 var old_pos = 0.0;
@@ -1057,6 +1076,8 @@ function animate() {
   document.getElementById("info").innerHTML =score;
   old_score =score;
   }
+
+  //moveclouds();
 }
 
 function start(){
