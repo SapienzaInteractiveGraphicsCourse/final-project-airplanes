@@ -99,7 +99,7 @@ function setColl(){
 }
 
 function noColl(){
-    flagColl = true;
+    flagColl = false;
     document.getElementById("yes_coll").style.background = "#006680";
     document.getElementById("no_coll").style.background = "#f52b2b";
 }
